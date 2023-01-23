@@ -1,0 +1,132 @@
+⍝ Santiago Nunez-Corrales (nunezco2@illinois.edu)
+⍝ National Center for Supercomputing Applications
+⍝ University of Illinois Urbana-Champaign
+
+⍝ The namespace `quapl` provides all required definitions to implement a
+⍝ mathematica simulation of a quantum computing device.
+
+:Namespace quapl
+    
+    ⍝ Single qubit manipulations
+    :Namespace sng
+        ⍝ Ground state |0>
+        q0 ← 2 1 ⍴ 1 0
+
+        ⍝ Excited state |1>
+        q1 ← 2 1 ⍴ 0 1
+
+        ⍝ Bloch state
+        bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
+
+    :EndNamespace
+
+    ⍝ Multiqubit manipulations
+    :Namespace mlt
+
+        ⍝ Normalize a qubit
+        norm ← { ⍵÷0.5*⍨+/(dagger ⍵)×⍵}
+
+        ⍝ Test that we have a valid qubit
+        valid ← {
+            ((⍴⍵)[1]=1)∧(⊃(2⍟(⍴⍵)[2])=⌈2⍟(⍴⍵)[2]): 1    ⍝ We have a bra
+            ((⍴⍵)[2]=1)∧(⊃(2⍟(⍴⍵)[1])=⌈2⍟(⍴⍵)[1]): 1    ⍝ We have a ket
+            ⍝ 0                                         ⍝ Not a qubit
+        }
+
+        ⍝ Kronecker product
+        kpr ← ⊃ (,/ (⍪⌿ (⊂[3 4] ∘.×)))
+
+        ⍝ Dagger operator
+        dagger ← { ⍉+⍵ }
+
+        ⍝ Transform to ket
+        ket ← {
+            (⍴⍵)[2]=1: ⍵   ⍝ return same object if ket is column vector
+            dagger ⍵         ⍝ else return transposed conjugate
+        }
+
+        ⍝ Transform to bra
+        bra ← {
+            (⍴⍵)[1]=1: ⍵   ⍝ return same object if bra is row vector
+            dagger ⍵         ⍝ else return transposed conjugate
+        }
+
+    :EndNamespace
+    
+    ⍝ Quantum gates
+    :Namespace gates
+
+        ⍝ Identity - nop
+        I ← 2 2 ⍴ 1 0 0 1
+
+        ⍝ Global phase
+        G ← {I×*0J1×⍵}
+
+        ⍝ X (not)
+        X ← 2 2 ⍴ 0 1 1 0
+
+        ⍝ Y
+        Y ← 2 2 ⍴ 0 0J¯1 0J1 0
+
+        ⍝ Z (phase flip)
+        Z ← 2 2 ⍴ 1 0 0 ¯1
+
+        ⍝ S (√Z)
+        S ← 2 2 ⍴ 1 0 0 0J1
+
+        ⍝ V (√X)
+        V ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
+
+        ⍝ H (Hadamard-Walsh)
+        H ← (÷2*0.5)×(2 2 ⍴ 1 1 1 ¯1)
+
+        ⍝ P (phase shift)
+        P ← {2 2 ⍴ ((1 0 0),(*(0J1×⍵)))}
+
+        ⍝ T (4-th root of Z)
+        T ← 2 2 ⍴ ((1 0 0),(*(0J1×(0.25×○1))))
+
+        ⍝ Rx (rotation in x)
+        Rx ← {2 2 ⍴ ((2○⍵÷2),(0J¯1×(1○⍵÷2)),(0J¯1×(1○⍵÷2)),(2○⍵÷2))}
+
+        ⍝ Ry (rotation in y)
+        Ry ← {2 2 ⍴ ((2○⍵÷2),(¯1×(1○⍵÷2)),(1○⍵÷2),(2○⍵÷2))}
+
+        ⍝ Rz (rotation in z)
+        Rz ← {2 2 ⍴ ((*¯0J1×(⍵÷2)),0,0,(*0J1×(⍵÷2)))}
+
+        ⍝ CX (CNOT)
+        CNOT ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0
+
+        ⍝ XNOR
+        XNOR ← 4 4 ⍴ 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 1
+
+        ⍝ CY
+        CY ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 0J¯1 0 0 0J1 
+
+        ⍝ CZ
+        CZ ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ¯1
+
+        ⍝ CP (controlled phase)
+        CP ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 (*0J1×⍵) }
+
+        ⍝ DCNOT (double-controlled CNOT)
+        DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
+        
+        ⍝ SWAP
+        SWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1
+
+        ⍝ Imaginary SWAP
+        iSWAP ← 4 4 ⍴ 1 0 0 0 0 0 0J1 0 0 0J1 0 0 0 0 0 1
+
+        ⍝ Fermionic SWAP
+        fSWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 ¯1
+
+    :EndNamespace
+
+    ⍝ Circuit assembly
+    :Namespace circuit
+        
+        ⍝ New ground state register
+    :EndNamespace
+:EndNamespace
