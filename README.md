@@ -1,7 +1,7 @@
 # quAPL
 
 
-Santiago Núñez-Corrales, PhD
+Santiago Núñez-Corrales, PhD (nunezco2@illinois.edu)
 
 National Center for Supercomputing Applications
 
@@ -37,7 +37,7 @@ Illinois Quantum Information Science and Technology Center through the Illinois 
 
 ### Individuals
 
-This work also benefits from contributions of talented individuals listed below:
+This work also benefits from advice and contributions of talented individuals listed below:
 
 * Richard Park, Dyalog APL
 * Aaron Hsu, Dyalog APL
