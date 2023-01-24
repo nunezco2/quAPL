@@ -110,6 +110,9 @@
         ⍝ CP (controlled phase)
         CP ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 (*0J1×⍵) }
 
+        ⍝ CS (controlled phase S)
+        CS ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0J1 }
+
         ⍝ DCNOT (double-controlled CNOT)
         DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
         

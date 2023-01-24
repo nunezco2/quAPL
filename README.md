@@ -3,6 +3,8 @@
 
 Santiago Núñez-Corrales, PhD (nunezco2@illinois.edu)
 
+Visual Analytics
+
 National Center for Supercomputing Applications
 
 ## Description
