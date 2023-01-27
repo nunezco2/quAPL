@@ -131,5 +131,6 @@
     :Namespace circuit
         
         ⍝ New ground state register
+        reg ← {(⍵ 1⍴(⍳⍵)-1),(⍵ 1⍴⊂#.quapl.sng.q0)}
     :EndNamespace
 :EndNamespace
