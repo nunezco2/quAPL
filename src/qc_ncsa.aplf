@@ -170,11 +170,11 @@
         }
 
         ⍝ Thread a set of Hilbert space entities into a larger Hilbert space entity
-        thread ← ⊃ { #.quantum.mlt.kpr/⍵ }
+        thread ← ⊃ { #.quapl.mlt.kpr/⍵ }
 
         ⍝ Thread a (filtered) register into a vector state
         thread_reg ← {
-            ⊃ #.quantum.mlt.kpr/⍵[;2]
+            ⊃ #.quapl.mlt.kpr/⍵[;2]
         }
 
         ⍝ Unthread a vector state into a (filtered) register - TODO
@@ -188,7 +188,7 @@
 
         ⍝ Thread a gate set into a larger gate
         thread_gate ← {
-            ⊃ #.quantum.mlt.kpr/⍵
+            ⊃ #.quapl.mlt.kpr/⍵
         }
 
     :EndNamespace
