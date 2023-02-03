@@ -23,7 +23,7 @@
     ⍝ Multiqubit manipulations
     :Namespace mlt
 
-        ⍝ Normalize a qubit
+        ⍝ Normalize a quantum state
         norm ← { ⍵÷0.5*⍨+/(dagger ⍵)×⍵}
 
         ⍝ Test that we have a valid qubit
@@ -112,6 +112,18 @@
 
         ⍝ CS (controlled phase S)
         CS ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0J1 }
+
+        ⍝ XX (XX interaction)
+        XX ← { 4 4 ⍴ (2○(⍵÷2)) 0 0 (0J¯1×(1○(⍵÷2))) 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 (0J¯1×(1○(⍵÷2))) 0 0 (2○(⍵÷2))}
+
+        ⍝ YY (YY interaction)
+        YY ← { 4 4 ⍴ (2○(⍵÷2)) 0 0 (0J1×(1○(⍵÷2))) 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 (0J1×(1○(⍵÷2))) 0 0 (2○(⍵÷2))}
+
+        ⍝ ZZ (ZZ interaction)
+        ZZ ← {4 4 ⍴ (*(0J¯1×(⍵÷2))) 0 0 0 0 (*(0J1×(⍵÷2))) 0 0 0 0 (*(0J1×(⍵÷2))) 0 0 0 0 (*(0J¯1×(⍵÷2)))}
+
+        ⍝ XY (XX + YY interaction)
+        XY ← { 4 4 ⍴ 1 0 0 0 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 0 0 0 1}
 
         ⍝ DCNOT (double-controlled CNOT)
         DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
