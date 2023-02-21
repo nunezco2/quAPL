@@ -177,6 +177,38 @@
             ⊃ #.quapl.mlt.kpr/⍵[;2]
         }
 
+        ⍝ Thread a gate set into a single operation
+        thread_gate ← {
+            ⊃ #.quapl.mlt.kpr/⍵
+        }
+
+        ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
+        ⍝ Naïve implementation.
+        ⍝ 
+        ⍝ We benefit from the property relating permutations to binary represetations and how
+        ⍝ it manifests into concrete permutations of qubits when re-arranging circuits, after
+        ⍝ translation into a vector state.
+
+        ⍝ Build a table with the full binary representation of (2^n, 1) indices of an C^n vector
+        tnsidx ← {⍉(⍵ ⍴ 2) ⊤ ((2*⍵) ⍴ (⍳(2*⍵)) - 1)}
+
+        ⍝ Map a qubit reordering into the tensor product row reordering
+        qrdtotrd ← {1 + 2⊥⍉⍵⌷[2]⍨∘⊂⍨tnsidx ⍺}
+
+        ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
+        ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
+        ⍝
+        ⍝ ⍺: gate set
+        ⍝ ⍺⍺: reordering for the gates
+        ⍝ ⍵: the target vector state
+        _Stage_ ← {
+            size ← 1⌷⍴⍵
+            
+        }
+
+        ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
+        ⍝ Intelligent tensor decomposition implementation.
+
         ⍝ Unthread a vector state into a (filtered) register - TODO
         ⍝ This requires solving the Nearest Kronecker Product problem
         ⍝ References:
@@ -184,11 +216,6 @@
         ⍝   Springer Netherlands.
         unthread_reg ← {
 
-        }
-
-        ⍝ Thread a gate set into a larger gate
-        thread_gate ← {
-            ⊃ #.quapl.mlt.kpr/⍵
         }
 
     :EndNamespace
