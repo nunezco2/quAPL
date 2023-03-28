@@ -24,7 +24,7 @@
     :Namespace mlt
 
         ⍝ Normalize a quantum state
-        norm ← { ⍵÷0.5*⍨+/(dagger ⍵)×⍵}
+        normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
 
         ⍝ Test that we have a valid qubit
         valid ← {
