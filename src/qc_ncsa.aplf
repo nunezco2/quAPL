@@ -18,6 +18,12 @@
         ⍝ Bloch state
         bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
 
+        ⍝ Projection operator to 0
+        P0 ← 2 2 ⍴ 1 0 0 0
+
+        ⍝ Projection operator to 1
+        P1 ← 2 2 ⍴ 0 0 0 1
+
     :EndNamespace
 
     ⍝ Multiqubit manipulations
