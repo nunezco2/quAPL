@@ -163,6 +163,19 @@
 
     :EndNamespace
 
+    :Namespace Measurement
+        ⍝ Rolls over a set of probabilities. ⍵ should be a vector where each element indicates the probability of the vector to be in that state
+        ⍝ Returns the index of the roll
+        roll ← {1++/(?0)>+\⍵}
+
+        ⍝ Measures a vector space, returns the index of the state that was rolled. (the result will)
+        measure ← {roll (⍉⍵*2)}        
+
+        ⍝ Measures a register.
+        measure_reg ← {measure thread_reg ⍵}
+
+    :EndNamespace
+
     ⍝ Circuit assembly
     :Namespace circuit
         
