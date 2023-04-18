@@ -12,7 +12,7 @@
         ⍝ Ground state |0>
         q0 ← 2 1 ⍴ 1 0
 
-        ⍝ Excited state |1>
+        ⍝ excitedited state |1>
         q1 ← 2 1 ⍴ 0 1
 
         ⍝ Bloch state
@@ -177,23 +177,23 @@
 
         ⍝ Helper function used in measure_qubit. Splits an list of continuos numbers representing indeces between the ground and excited indeces.
         ⍝ First right argument should be the numbers of items in each state before it switches to the next state.
-        ⍝    e.g.: for a 3 qubit vector state if measuring qubit 0, split_size is 4, qubit 1 split_size is 2 and qubit 3 split_size is 1.
+        ⍝    e.g.: for a 3 qubit vector state if measuring qubit 0, switch is 4, qubit 1 switch is 2 and qubit 3 switch is 1.
         ⍝ Second right argument Array of indices we want to split, should be a power of 2
         ⍝ Third and Fourth arguments are only necessary for recursion, should probably have a default of ⍬
-        ⍝ Returns split_size, empty array, the ground indeces and excited indices.
+        ⍝ Returns switch, empty array, the ground indeces and excited indices.
         _split ← {
-            split_size←⍵[1]
-            indices_to_split←⊃⍵[2]
-            grd←⊃⍵[3]
-            exc←⊃⍵[4]
+            switch←⍵[1]
+            indices←⊃⍵[2]
+            ground←⊃⍵[3]
+            excited←⊃⍵[4]
         
-            grd←grd,(split_size↑indices_to_split)
-            indices_to_split←split_size↓indices_to_split
-            exc←exc,(split_size↑indices_to_split)
-            indices_to_split←split_size↓indices_to_split
+            ground←ground,(switch↑indices)
+            indices←switch↓indices
+            excited←excited,(switch↑indices)
+            indices←switch↓indices
         
-            (⍴indices_to_split)=0:split_size indices_to_split grd exc
-            ∇ split_size indices_to_split grd exc
+            (⍴indices)=0:switch indices ground excited
+            ∇ switch indices ground excited
         }
 
         ⍝ Measures a specific qubit in a threaded register.
@@ -205,15 +205,15 @@
             n_qubits←2⍟n_basis
             a←⍺+1
         
-            split_size←⊃(n_basis÷(2*a))
-            indices_to_split←⍳n_basis
-            _ _ grnd exc←_split((split_size)(indices_to_split)(⍬)(⍬))
+            switch←⊃(n_basis÷(2*a))
+            indices←⍳n_basis
+            _ _ ground excited←_split((switch)(indices)(⍬)(⍬))
         
-            vs←(⊂⍵[grnd;]),(⊂⍵[exc;])
-            grnd_prob←+/(⍉⍵[grnd;]*2)
-            exc_prob←+/(⍉⍵[exc;]*2)
+            vs←(⊂⍵[ground;]),(⊂⍵[excited;])
+            ground_prob←+/(⍉⍵[ground;]*2)
+            excited_prob←+/(⍉⍵[excited;]*2)
         
-            meas_result←1++/(?0)>+\((⊃grnd_prob),(⊃exc_prob))
+            meas_result←1++/(?0)>+\((⊃ground_prob),(⊃excited_prob))
             normed_vs←#.quapl.mlt.normalize(⊃vs[meas_result])
         
             (meas_result-1)(normed_vs)
