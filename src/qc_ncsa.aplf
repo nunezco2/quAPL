@@ -197,26 +197,30 @@
         }
 
         ⍝ Measures a specific qubit in a threaded register.
-        ⍝ Returns the measured state of the qubit and the new vector state of the remaining normalized vector state of the other qubits.
+        ⍝ Returns the measured state of the qubit and the new normalized vector state vector state of all the qubits.
         ⍝ ⍺ is the qubit I want to measure.
         ⍝ ⍵ is my threadeaded register.
-        measure_qubit ← {
+         measure_qubit ← {
             n_basis←1↑⍴⍵
             n_qubits←2⍟n_basis
             a←⍺+1
-        
+
             switch←⊃(n_basis÷(2*a))
             indices←⍳n_basis
             _ _ ground excited←_split((switch)(indices)(⍬)(⍬))
-        
-            vs←(⊂⍵[ground;]),(⊂⍵[excited;])
+
+            split_inde←(⊂ground),(⊂excited)
+            split_vs←(⊂⍵[ground;]),(⊂⍵[excited;])
+
             ground_prob←+/(⍉⍵[ground;]*2)
             excited_prob←+/(⍉⍵[excited;]*2)
-        
+
             meas_result←1++/(?0)>+\((⊃ground_prob),(⊃excited_prob))
-            normed_vs←#.quapl.mlt.normalize(⊃vs[meas_result])
-        
-            (meas_result-1)(normed_vs)
+            new_vs←n_basis/0
+            new_vs[⊃split_inde[meas_result]]←⍵[⊃split_inde[meas_result];]
+            new_vs←#.quapl.mlt.normalize(new_vs)
+
+            (meas_result-1)((⊃n_basis)1⍴new_vs)
         }
 
     :EndNamespace
