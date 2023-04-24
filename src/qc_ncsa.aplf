@@ -15,6 +15,9 @@
         ⍝ Excited state |1>
         q1 ← 2 1 ⍴ 0 1
 
+        ⍝ Linear superposition of amplitudes
+        qx ← #.quapl.mlt.normalize +/(q0 q1) ×.+ ⍵ 
+
         ⍝ Bloch state
         bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
 
