@@ -161,6 +161,17 @@
         ⍝ Toffoli (Doubly-controlled not)
         TOF ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0
 
+        ⍝ Generalized controlled gate with k-qubit controls
+        ⍝ ⍺: number of (preceding) control qubits
+        ⍝ ⍵: gate
+        gCTR ← {
+            (n _) ← ⍴ ⍵
+            ID ← {⍵ ⍵ ρ 1, ⍵ρ0}
+            gate ← ID 2*(⍺ + 2⍟n)
+            ((-⍴⍵)↑gate) ← ⍵
+            gate
+        }
+
     :EndNamespace
 
     ⍝ Measurement functions
