@@ -226,7 +226,7 @@
             indices←⍳n_basis
             _ _ ground excited←_split((switch)(indices)(⍬)(⍬))
 
-            split_inde←(⊂ground),(⊂excited)
+            split_index←(⊂ground),(⊂excited)
             split_vs←(⊂⍵[ground;]),(⊂⍵[excited;])
 
             ground_prob←+/(⍉⍵[ground;]*2)
@@ -234,7 +234,7 @@
 
             meas_result←1++/(?0)>+\((⊃ground_prob),(⊃excited_prob))
             new_vs←n_basis/0
-            new_vs[⊃split_inde[meas_result]]←⍵[⊃split_inde[meas_result];]
+            new_vs[⊃split_index[meas_result]]←⍵[⊃split_index[meas_result];]
             new_vs←#.quapl.mlt.normalize(new_vs)
 
             (meas_result-1)((⊃n_basis)1⍴new_vs)
@@ -283,12 +283,27 @@
         ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
         ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
         ⍝
-        ⍝ ⍺: gate set
-        ⍝ ⍺⍺: reordering for the gates
+        ⍝ ⍺[1]: The index of the qubits in which the gates are applied 
+        ⍝ ⍺[2]: The set of gates to apply to those qubits
         ⍝ ⍵: the target vector state
-        _Stage_ ← {
-            size ← 1⌷⍴⍵
-            
+        stage←{
+            idx gtx←⍺
+            n_qubits←(2⍟1↑(⍴⍵))
+            qubits←(⍳(2⍟1↑(⍴⍵)))-1
+
+            ⍝ missing ids
+            midx←(~(qubits∊idx))/qubits
+            ids←{#.quapl.gates.I}¨midx
+            new_idx←idx,midx
+            new_gtx←gtx,ids
+
+            new_index←n_qubits #.quapl.circuit.qrdtotrd(new_idx+1)
+            ⍝ complete gate
+            com_gate←#.quapl.mlt.kpr/new_gtx
+
+            ret←(⊃com_gate)+.×(⍵[new_index;])
+            ret[new_index;]←ret
+            ret
         }
 
         ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
@@ -302,154 +317,6 @@
         unthread_reg ← {
 
         }
-
-
-        ⍝ Goes through a list of indices measuring the qubits indicated by them.
-        ⍝ 
-        ⍝ ⍺: list of indices to measure
-        ⍝ ⍵: current set of vector states
-        _stage_measure←{
-            1≥(≢⍺):⊃(⍺ measure_qubit ⍵)[2]
-            w←⊃(⍺[1]measure_qubit ⍵)[2]
-            a←1↓⍺
-            a ∇ w
-        }
-
-
-        ⍝ Applies a double qubit gate to an arbitrary pair of qubits.
-        ⍝ Swaps the qubits around the vector space until they are togehter, applies the gate,
-        ⍝  and places them back in the original positions. 
-        ⍝ 
-        ⍝ ⍵: The vector state.
-        ⍝ ⍺[1] Double qubit gate.
-        ⍝ ⍺[2] Array containing first the control qubit and then the target qubit.
-         _swap_and_apply←{
-            ⍝ Inserts a SWAP gate in the specified position in the passed list
-            ⍝ 
-            ⍝ ⍵[1]: List where the SWAP gate should be inserted
-            ⍝ ⍵[2]; Position where the SWAP gate should be inserted
-            _insert_swaps←{
-                _id←¯1↓⍵
-                swap_pos←⊃¯1↑⍵
-                _id[swap_pos]←⊂#.quapl.gates.SWAP
-                #.quapl.mlt.kpr/_id}
-
-            ⍝ Helper function used to reorder the qubits of the vector state.
-            ⍝ Used for when you need to apply a double qubit gate to flipped qubits
-            ⍝  
-            ⍝ ⍺: Number of qubits
-            ⍝ ⍵: Vector state.      
-            _apply_transformation←{
-                trans←⍺ #.quapl.circuit.qrdtotrd(⌽⍳⍺)
-                len←≢⍵
-                nested_len←≢⊃⍵
-                len=1:nested_len 1⍴((nested_len⍴⍵)[trans])
-                len 1⍴((len⍴⍵)[trans])
-            }
-
-            ⍝ Initialize variables. Both regular and flipped ways are intialized.
-            n_basis←1↑⍴⍵
-            n_qubits←2⍟n_basis
-
-            g←⊃⍺[1]
-            t←⊃⍺[2]+1
-            control←(⊂t[1])(⊂t[2])
-            target←(⊂t[2])(⊂t[1])
-            w←⍵(n_qubits _apply_transformation ⍵)
-            n_swaps←((target[1]-control[1])-1)(⊂|(target[1]-control[1]))
-            
-            ⍝ Indicates if we are using the regular or flipped version
-            _i←(n_swaps[1]<0)+1
-
-
-            ⍝ Arrays of identity operator, replace one of them with a 2 qubit gate
-            id_gates←((n_qubits-1)/⊂#.quapl.gates.I)
-
-            ⍝ if n_swaps is 0, just apply the gate where it should be and you are done
-            single_gate←⊃(1/⊂id_gates)
-            single_gate[control[_i]]←⊂g
-            single_gate←#.quapl.mlt.kpr/single_gate
-            n_swaps[_i]=0:(⊃single_gate)+.×⍵
-
-
-            ⍝ copy as many id_gates as swaps are necessary 
-            ⍝ (the amount of non SWAP gates that are being applied)
-            ids←n_swaps[_i]/(⊂id_gates)
-
-            ⍝ Calculates the positions of the SWAP gates
-            swap_positions←((¯1×n_swaps[_i])↑⍳target[_i])-1
-
-            swap_gates_list←(⊃¨(_insert_swaps¨(ids,¨swap_positions)))
-
-            complete_swap_gate←+.×/swap_gates_list
-            inverse_swap_gate←+.×/(⌽swap_gates_list)
-
-            w[_i]←⊂((⊃complete_swap_gate)+.×(⊃w[_i]))
-
-            ⍝ Apply the intended gate
-            gate←⊃(1/ids)
-            gate[control[_i]]←⊂g
-            gate←#.quapl.mlt.kpr/gate
-
-            ⍝ Bring the vs back to its original position
-            w[_i]←⊂(⊃gate)+.×(⊃w[_i])
-            w[_i]←⊂(⊃inverse_swap_gate)+.×(⊃w[_i])
-            _i=2:⊃(n_qubits _apply_transformation w[_i])
-            ⊃w[_i]
-        }
-
-
-
-        apply_stage←{
-            
-            ⍝ Define internal helper functions
-
-            ⍝ Helper function used to separate both kind of gates
-            _select_item←{⊃¨(⍺↑¨⍵)}
-            
-            ⍝ apply all of the double qubit gates to a vector state
-            ⍝   
-            ⍝ ⍵[1] list of double qubit gates
-            ⍝ ⍵[2] the vector state
-            _apply_all_double_gates←{
-            
-                _ga←⊃⍵[1]
-                __vs←⊃⍵[2]
-
-                __vs←(⊃(1↑_ga))_swap_and_apply __vs
-                __vs
-                _ga←1↓_ga
-
-                (≢_ga)=0:__vs
-
-                ∇(_ga)(__vs)
-            }
-
-            ⍝ initalize variables
-            n_basis←1↑⍴⍵
-            n_qubits←2⍟n_basis
-            meas_indeces←⍺[1]
-            _gates←⊃⍺[2]
-
-            ⍝ Measure the corresponding qubits first
-            _vs←meas_indeces _stage_measure ⍵
-
-            ⍝ split the gates
-            gates_arity←≢¨(¯1 _select_item _gates)
-            single_gates←(1=gates_arity)/_gates
-            double_gates←(2=gates_arity)/_gates
-
-            ⍝ prepare and apply all the single qubit gates
-            single_gate_stage←n_qubits/⊂#.quapl.gates.I
-            single_gate_stage[1+¯1 _select_item single_gates]←(1 _select_item single_gates)
-            single_gate_stage←⊃(#.quapl.mlt.kpr/single_gate_stage)
-            _vs←single_gate_stage+.×_vs
-
-            ⍝ Apply all of the double qubit gates
-            _apply_all_double_gates(double_gates _vs)
-
-        }
-
 
     :EndNamespace
 :EndNamespace
