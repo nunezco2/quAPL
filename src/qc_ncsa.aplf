@@ -60,6 +60,45 @@
             dagger ⍵         ⍝ else return transposed conjugate
         }
 
+        ⍝ Measures a vector state
+        ⍝
+        ⍝ ⍵: vector state to measure
+        ⍝ ⍺: indices of qubits to measure, if left empty all of the qubits will be measured
+        ⍝
+        ⍝ Returns a pair of items:
+        ⍝ - An array of tuples where the first item of the tuple is the index of the qubit measured and the second item,
+        ⍝    the measured state.
+        ⍝ - The final vector state 
+        measure ← {
+            n_qubits ← (2⍟1↑(⍴⍵))
+            indices ← ⍳(1↑⍴⍵)
+            ⍺ ← (⍳n_qubits)-1
+            binary_basis ← #.quapl.circuit.tnsidx n_qubits
+            q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
+
+            measure_helper ← {
+                ⍺≡⍬: ⍵
+                a ← (1↑⍺) + 1
+                past_results vs ← ⍵
+                select ← a⌷[2]binary_basis
+
+                ground_idx ← (~select)/indices
+                excited_idx ← select/indices
+                split_idx ← ground_idx excited_idx
+
+                excited ← +/[1]((select/[1]vs)*2)
+                ground ← +/[1](((~select)/[1]vs)*2)
+                result ← {+/(?0)>+\⍵}(ground excited)
+                vs[(⊃split_idx[1+~result]);] ← 0
+                vs ← #.quapl.mlt.normalize vs
+                past_results≡⍬:(1↓⍺)∇((⊂((a-1),q_levels[1+result]))vs)
+                ((1↓⍺))∇((past_results,(⊂((a-1),q_levels[1+result])))vs)
+            }
+
+            ret ← ⍺ measure_helper(⍬ ⍵)
+            (⍪⊃ret[1])(⊃(ret[2]))
+        }
+
     :EndNamespace
     
     ⍝ Quantum gates
@@ -173,64 +212,6 @@
             gate ← ID 2*(⍺ + 2⍟n)
             ((-⍴⍵)↑gate) ← ⍵
             gate
-        }
-
-    :EndNamespace
-
-    ⍝ Measurement functions
-    :Namespace measure
-        ⍝ Rolls over a set of probabilities. ⍵ should be a vector where each element indicates the probability of the vector to be in that state
-        ⍝ Returns the index of the roll
-        roll ← {1++/(?0)>+\⍵}
-
-        ⍝ Measures a vector space, returns the index of the state that was rolled. (the result will)
-        measure ← {roll (⍉⍵*2)}
-
-        ⍝ Measures a register.
-        measure_reg ← {measure #.quapl.circuit.thread_reg ⍵}
-
-        ⍝ Helper function used in measure_qubit. Splits an list of continuos numbers representing indeces between the ground and excited indeces.
-        ⍝ First right argument should be the numbers of items in each state before it switches to the next state.
-        ⍝    e.g.: for a 3 qubit vector state if measuring qubit 0, switch is 4, qubit 1 switch is 2 and qubit 3 switch is 1.
-        ⍝ Second right argument Array of indices we want to split, should be a power of 2
-        ⍝ Third and Fourth arguments are only necessary for recursion, should probably have a default of ⍬
-        ⍝ Returns switch, empty array, the ground indeces and excited indices.
-        _split ← {
-            switch←⍵[1]
-            indices←⊃⍵[2]
-            ground←⊃⍵[3]
-            excited←⊃⍵[4]
-        
-            ground←ground,(switch↑indices)
-            indices←switch↓indices
-            excited←excited,(switch↑indices)
-            indices←switch↓indices
-        
-            (⍴indices)=0:switch indices ground excited
-            ∇ switch indices ground excited
-        }
-
-        ⍝ Measures a specific qubit in a threaded register.
-        ⍝ Returns the measured state of the qubit and the new vector state of the remaining normalized vector state of the other qubits.
-        ⍝ ⍺ is the qubit I want to measure.
-        ⍝ ⍵ is my threadeaded register.
-        measure_qubit ← {
-            n_basis←1↑⍴⍵
-            n_qubits←2⍟n_basis
-            a←⍺+1
-        
-            switch←⊃(n_basis÷(2*a))
-            indices←⍳n_basis
-            _ _ ground excited←_split((switch)(indices)(⍬)(⍬))
-        
-            vs←(⊂⍵[ground;]),(⊂⍵[excited;])
-            ground_prob←+/(⍉⍵[ground;]*2)
-            excited_prob←+/(⍉⍵[excited;]*2)
-        
-            meas_result←1++/(?0)>+\((⊃ground_prob),(⊃excited_prob))
-            normed_vs←#.quapl.mlt.normalize(⊃vs[meas_result])
-        
-            (meas_result-1)(normed_vs)
         }
 
     :EndNamespace
