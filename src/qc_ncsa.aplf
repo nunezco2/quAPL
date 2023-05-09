@@ -71,7 +71,7 @@
         ⍝ - The final vector state 
         measure ← {
             n_qubits ← (2⍟1↑(⍴⍵))
-            indices ← ⍳(1↑⍴⍵)
+            idxs ← ⍳(1↑⍴⍵)
             ⍺ ← (⍳n_qubits)-1
             binary_basis ← #.quapl.circuit.tnsidx n_qubits
             q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
@@ -82,8 +82,8 @@
                 past_results vs ← ⍵
                 select ← a⌷[2]binary_basis
 
-                ground_idx ← (~select)/indices
-                excited_idx ← select/indices
+                ground_idx ← (~select)/idxs
+                excited_idx ← select/idxs
                 split_idx ← ground_idx excited_idx
 
                 excited ← +/[1]((select/[1]vs)*2)
