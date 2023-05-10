@@ -211,26 +211,33 @@
         }
 
         ⍝ Measures a specific qubit in a threaded register.
-        ⍝ Returns the measured state of the qubit and the new vector state of the remaining normalized vector state of the other qubits.
+        ⍝ Returns the measured state of the qubit and the new normalized vector state vector state of all the qubits.
         ⍝ ⍺ is the qubit I want to measure.
         ⍝ ⍵ is my threadeaded register.
-        measure_qubit ← {
+         measure_qubit ← {
             n_basis←1↑⍴⍵
             n_qubits←2⍟n_basis
             a←⍺+1
-        
+
             switch←⊃(n_basis÷(2*a))
+            ⍝ Checks whether switch is a reasonable number. 
+            ⍝ Not perfect but will catch inidces bigger than the number of qubits.
+            switch<1:⍬
             indices←⍳n_basis
             _ _ ground excited←_split((switch)(indices)(⍬)(⍬))
-        
-            vs←(⊂⍵[ground;]),(⊂⍵[excited;])
+
+            split_index←(⊂ground),(⊂excited)
+            split_vs←(⊂⍵[ground;]),(⊂⍵[excited;])
+
             ground_prob←+/(⍉⍵[ground;]*2)
             excited_prob←+/(⍉⍵[excited;]*2)
-        
+
             meas_result←1++/(?0)>+\((⊃ground_prob),(⊃excited_prob))
-            normed_vs←#.quapl.mlt.normalize(⊃vs[meas_result])
-        
-            (meas_result-1)(normed_vs)
+            new_vs←n_basis/0
+            new_vs[⊃split_index[meas_result]]←⍵[⊃split_index[meas_result];]
+            new_vs←#.quapl.mlt.normalize(new_vs)
+
+            (meas_result-1)((⊃n_basis)1⍴new_vs)
         }
 
     :EndNamespace
@@ -276,12 +283,27 @@
         ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
         ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
         ⍝
-        ⍝ ⍺: gate set
-        ⍝ ⍺⍺: reordering for the gates
+        ⍝ ⍺[1]: The index of the qubits in which the gates are applied 
+        ⍝ ⍺[2]: The set of gates to apply to those qubits
         ⍝ ⍵: the target vector state
-        _Stage_ ← {
-            size ← 1⌷⍴⍵
-            
+        stage←{
+            idx gtx←⍺
+            n_qubits←(2⍟1↑(⍴⍵))
+            qubits←(⍳(2⍟1↑(⍴⍵)))-1
+
+            ⍝ missing ids
+            midx←(~(qubits∊idx))/qubits
+            ids←{#.quapl.gates.I}¨midx
+            new_idx←idx,midx
+            new_gtx←gtx,ids
+
+            new_index←n_qubits #.quapl.circuit.qrdtotrd(new_idx+1)
+            ⍝ complete gate
+            com_gate←#.quapl.mlt.kpr/new_gtx
+
+            ret←(⊃com_gate)+.×(⍵[new_index;])
+            ret[new_index;]←ret
+            ret
         }
 
         ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
