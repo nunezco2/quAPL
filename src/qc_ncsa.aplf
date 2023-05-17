@@ -78,21 +78,21 @@
 
             measure_helper ← {
                 ⍺≡⍬: ⍵
-                a ← (1↑⍺) + 1
+                idx ← (1↑⍺) + 1
                 past_results vs ← ⍵
-                select ← a⌷[2]binary_basis
+                select ← idx⌷[2]binary_basis
 
-                ground_idx ← (~select)/idxs
-                excited_idx ← select/idxs
-                split_idx ← ground_idx excited_idx
+                basis_0_idx ← (~select)/idxs
+                basis_1_idx ← select/idxs
+                split_idx ← basis_0_idx basis_1_idx
 
                 excited ← +/[1]((select/[1]vs)*2)
                 ground ← +/[1](((~select)/[1]vs)*2)
-                result ← {+/(?0)>+\⍵}(ground excited)
-                vs[(⊃split_idx[1+~result]);] ← 0
+                choice ← {+/(?0)>+\⍵}(ground excited)
+                vs[(⊃split_idx[1+~choice]);] ← 0
                 vs ← #.quapl.mlt.normalize vs
-                past_results≡⍬:(1↓⍺)∇((⊂((a-1),q_levels[1+result]))vs)
-                ((1↓⍺))∇((past_results,(⊂((a-1),q_levels[1+result])))vs)
+                past_results≡⍬:(1↓⍺)∇((⊂((idx-1),q_levels[1+choice]))vs)
+                ((1↓⍺))∇((past_results,(⊂((idx-1),q_levels[1+choice])))vs)
             }
 
             ret ← ⍺ measure_helper(⍬ ⍵)
