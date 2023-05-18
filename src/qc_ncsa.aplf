@@ -45,6 +45,29 @@
         ⍝ Kronecker product
         kpr ← ⊃ (,/ (⍪⌿ (⊂[3 4] ∘.×)))
 
+        ⍝ Separate a vector state into a list of lists corresponding to 
+        separate←{
+            2=⍴⍵: ⊂⍵
+            mask ← 1=(2*(2⍟⍴⍵)-1)|⍳⍴⍵
+            partition ← mask⊂⍵
+            lcd_a ← ∨/⊃1⌷partition
+            lcd_b ← ∨/⊃2⌷partition
+            0=lcd_a: (⊂0 1),(∇⊃2⌷partition)
+            0=lcd_b: (⊂1 0),(∇⊃1⌷partition)
+            a ← (⊃1⌷partition)÷lcd_a
+            b ← (⊃2⌷partition)÷lcd_b
+            a≡b: (⊂lcd_a lcd_b),(∇ a)
+            ⊂⍵
+        }
+        
+        ⍝ Undo Kronecker product naively for vector states
+        unkpr ← {
+            vs_list ← ,⍵
+            flat_qubits ← separate vs_list
+            num_qs ← ⊃⍴flat_qubits
+            num_qs 1⍴(2 1)∘⍴¨ normalize¨ flat_qubits
+        }
+
         ⍝ Dagger operator
         dagger ← { ⍉+⍵ }
 
@@ -239,6 +262,12 @@
         ⍝ Thread a gate set into a single operation
         thread_gate ← {
             ⊃ #.quapl.mlt.kpr/⍵
+        }
+
+        ⍝ Unthread a vector state and produce a new register
+        unthread_vs ← {
+            num_qs ← 1⌷2⍟⍴⍵
+            (num_qs 1 ⍴ (⍳ num_qs)-1),(#.quapl.mlt.unkpr ⍵)
         }
 
         ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
