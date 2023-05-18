@@ -3,7 +3,9 @@
 
 Santiago Núñez-Corrales, PhD (nunezco2@illinois.edu)
 
-Visual Analytics
+Marcos Frenkel (marcosf2@illinois.edu)
+
+Bruno de Abreu (babreu@illinois.edu)
 
 National Center for Supercomputing Applications
 
