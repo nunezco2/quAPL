@@ -65,7 +65,7 @@
             vs_list ← ,⍵
             flat_qubits ← separate vs_list
             num_qs ← ⊃⍴flat_qubits
-            num_qs 1⍴(2 1)∘⍴¨flat_qubits
+            num_qs 1⍴(2 1)∘⍴¨ normalize¨ flat_qubits
         }
 
         ⍝ Dagger operator
