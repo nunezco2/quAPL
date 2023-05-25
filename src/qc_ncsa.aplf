@@ -308,7 +308,7 @@
 
             ⍝ Apply the gate and return vector state with restored order
             base ← ((⍴ new_index) 1) ⍴ 0
-            base[;new_index] ← ⍵[;1]
+            base[new_index;] ← ⍵[;1]
             ret ← com_gate +.× base
             ret[new_index;]
         }
