@@ -322,4 +322,25 @@
         }
 
     :EndNamespace
+
+    :Namespace show
+        ⍝ Represent a single qubit
+        q ← {
+            #.quapl.sng.q0≡⍵: '|0⟩'
+            #.quapl.sng.q0≡⍵: '|1⟩'
+            (⍕⍵[1;1]),'|0⟩+',(⍕⍵[2;1]),'|1⟩'
+        }
+
+        b ← {
+            q0≡⍵: '0'
+            q1≡⍵: '1'
+            '𝜑'
+        }
+
+        ⍝ Represent a register without expanding superposition or entanglement
+        r ← {
+            '|',(b¨⌽⍵[;2]),'⟩'
+        }
+        
+    :EndNamespace
 :EndNamespace
