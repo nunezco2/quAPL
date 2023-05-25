@@ -307,8 +307,8 @@
             com_gate ← ⊃#.quapl.mlt.kpr/new_gtx
 
             ⍝ Apply the gate and return vector state with restored order
-            base ← (1 ⌷ ⍴ new_index) 1 ⍴ 0
-            base[;perm] ← ⍵[;1]
+            base ← ((⍴ new_index) 1) ⍴ 0
+            base[;new_index] ← ⍵[;1]
             ret ← com_gate +.× base
             ret[new_index;]
         }
