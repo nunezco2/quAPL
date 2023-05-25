@@ -290,23 +290,27 @@
         ⍝ ⍺[2]: The set of gates to apply to those qubits
         ⍝ ⍵: the target vector state
         stage←{
-            idx gtx←⍺
-            n_qubits←(2⍟1↑(⍴⍵))
-            qubits←(⍳(2⍟1↑(⍴⍵)))-1
+            idx gtx ← ⍺
+            n_qubits ← (2⍟1↑(⍴⍵))
+            qubits ← (⍳(2⍟1↑(⍴⍵)))-1
 
-            ⍝ missing ids
-            midx←(~(qubits∊idx))/qubits
-            ids←{#.quapl.gates.I}¨midx
-            new_idx←idx,midx
-            new_gtx←gtx,ids
+            ⍝ Compute missing ids and identity gates
+            midx ← (~(qubits∊idx))/qubits
+            ids ← {#.quapl.gates.I}¨midx
+            new_idx ← idx,midx
+            new_gtx ← gtx,ids
 
-            new_index←n_qubits #.quapl.circuit.qrdtotrd(new_idx+1)
-            ⍝ complete gate
-            com_gate←#.quapl.mlt.kpr/new_gtx
+            ⍝ Obtain the resulting permutation for the qubit reordering
+            new_index ← n_qubits #.quapl.circuit.qrdtotrd (new_idx + 1)
+            
+            ⍝ Compute gate to apply
+            com_gate ← ⊃#.quapl.mlt.kpr/new_gtx
 
-            ret←(⊃com_gate)+.×(⍵[new_index;])
-            ret[new_index;]←ret
-            ret
+            ⍝ Apply the gate and return vector state with restored order
+            base ← (1 ⌷ ⍴ new_index) 1 ⍴ 0
+            base[;perm] ← ⍵[;1]
+            ret ← com_gate +.× base
+            ret[new_index;]
         }
 
         ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
