@@ -152,25 +152,51 @@
         H ← (÷2*0.5)×(2 2 ⍴ 1 1 1 ¯1)
 
         ⍝ P (phase shift)
-        P ← {2 2 ⍴ ((1 0 0),(*(0J1×⍵)))}
+        P ← {
+            ph ← *0J1×⍵
+            2 2 ⍴ ((1 0 0),ph)
+        }
 
         ⍝ T (4-th root of Z)
-        T ← 2 2 ⍴ ((1 0 0),(*(0J1×(0.25×○1))))
+        T ← 2 2 ⍴ ((1 0 0),*0J1×0.25×○1)
 
         ⍝ Rx (rotation in x)
-        Rx ← {2 2 ⍴ ((2○⍵÷2),(0J¯1×(1○⍵÷2)),(0J¯1×(1○⍵÷2)),(2○⍵÷2))}
+        Rx ← {
+            a←2○⍵÷2
+            b←0J¯1×1○⍵÷2
+            2 2 ⍴ a b b a
+        }
 
         ⍝ Ry (rotation in y)
-        Ry ← {2 2 ⍴ ((2○⍵÷2),(¯1×(1○⍵÷2)),(1○⍵÷2),(2○⍵÷2))}
+        Ry ← {
+            a ← 2○⍵÷2
+            b ← 1○⍵÷2
+            bm ← ¯1×b
+            2 2 ⍴ a bm b a
+        }
 
         ⍝ Rz (rotation in z)
-        Rz ← {2 2 ⍴ ((*¯0J1×(⍵÷2)),0,0,(*0J1×(⍵÷2)))}
+        Rz ← {
+            am ← *0J¯1×⍵÷2
+            ap ← *0J1×⍵÷2
+            2 2 ⍴ am 0 0 ap
+        }
 
         ⍝ U (generalized rotation)
-        U ← { 2 2 ⍴ (2○(⍵[1]÷2)) (-(*0J¯1×⍵[3])×(1○(⍵[1]÷2))) ((*0J¯1×⍵[2])×(1○(⍵[1]÷2))) ((*0J1×(⍵[2] + ⍵[3]))×(2○(⍵[1]÷2)))}
+        U ← {
+            (th ph lm) ← ⍵
+            a ← 2○th÷2
+            b ← ¯1×(*0J¯1×lm)×1○th÷2
+            c ← (*0J¯1×lm)×1○th÷2
+            d ← (*0J1×(ph + lm))×a
+            2 2 ⍴ a b c d
+        }
 
         ⍝ CX (CNOT)
         CNOT ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0
+
+        ⍝ Square root of NOT
+        sqNOT ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
 
         ⍝ XNOR
         XNOR ← 4 4 ⍴ 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 1
@@ -182,22 +208,43 @@
         CZ ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ¯1
 
         ⍝ CP (controlled phase)
-        CP ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 (*0J1×⍵) }
+        CP ← {
+            ph ← *0J1×⍵
+            4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ph
+        }
 
         ⍝ CS (controlled phase S)
         CS ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0J1 }
 
         ⍝ XX (XX interaction)
-        XX ← { 4 4 ⍴ (2○(⍵÷2)) 0 0 (0J¯1×(1○(⍵÷2))) 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 (0J¯1×(1○(⍵÷2))) 0 0 (2○(⍵÷2))}
+        XX ← {
+            x ← 2○⍵÷2
+            y ← 0J¯1×1○⍵÷2
+            4 4 ⍴ x 0 0 y 0 x y 0 0 y x 0 y 0 0 x
+        }
 
         ⍝ YY (YY interaction)
-        YY ← { 4 4 ⍴ (2○(⍵÷2)) 0 0 (0J1×(1○(⍵÷2))) 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 (0J1×(1○(⍵÷2))) 0 0 (2○(⍵÷2))}
+        YY ← {
+            x ← 2○⍵÷2
+            yb ← 1○⍵÷2
+            yp ← 0J1×yb
+            ym ← 0J¯1×yb
+            4 4 ⍴ x 0 0 yp 0 x ym 0 0 ym x 0 yp 0 0 x
+        }
 
         ⍝ ZZ (ZZ interaction)
-        ZZ ← {4 4 ⍴ (*(0J¯1×(⍵÷2))) 0 0 0 0 (*(0J1×(⍵÷2))) 0 0 0 0 (*(0J1×(⍵÷2))) 0 0 0 0 (*(0J¯1×(⍵÷2)))}
+        ZZ ← {
+            xm ← *0J¯1×⍵÷2
+            xp ← *0J1×⍵÷2
+            4 4 ⍴ xm 0 0 0 0 xp 0 0 0 0 xp 0 0 0 0 xm
+        }
 
         ⍝ XY (XX + YY interaction)
-        XY ← { 4 4 ⍴ 1 0 0 0 0 (2○(⍵÷2)) (0J¯1×(1○(⍵÷2))) 0 0 (0J¯1×(1○(⍵÷2))) (2○(⍵÷2)) 0 0 0 0 1}
+        XY ← {
+            x ← 2○⍵÷2
+            y ← 0J¯1×1○⍵÷2
+            4 4 ⍴ 1 0 0 0 0 x y 0 0 y x 0 0 0 0 1
+        }
 
         ⍝ DCNOT (double-controlled CNOT)
         DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
@@ -212,13 +259,17 @@
         fSWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 ¯1
 
         ⍝ Square root SWAP
-        sqSWAP ← 4 4 ⍴ 1 0 0 0 0 ((1 + 0J1)×÷2) ((1 - 0J1)×÷2) 0 0 ((1 - 0J1)×÷2) ((1 + 0J1)×÷2) 0 0 0 1
+        sqSWAP ← 4 4 ⍴ 1 0 0 0 0 ((1+0J1)×÷2) ((1-0J1)×÷2) 0 0 ((1-0J1)×÷2) ((1+0J1)×÷2) 0 0 0 1
 
         ⍝ Square root imaginary SWAP
         sqiSWAP ← 4 4 ⍴ 1 0 0 0 0 (1÷2*0.5) (0J1÷2*0.5) 0 0 (0J1÷2*0.5) (1÷2*0.5) 0 0 0 0 1
 
         ⍝ SWAP raised to the a-th power
-        aSWAP ← { 4 4 ⍴ 1 0 0 0 0 (2÷⍨(1+(*0J1×○1×⍵))) (2÷⍨(1-(*0J1×○1×⍵))) 0 0 (2÷⍨(1-(*0J1×○1×⍵))) (2÷⍨(1+(*0J1×○1×⍵))) 0 0 0 0 1}
+        aSWAP ← {
+            xp ← 2÷⍨(1+*0J1×○1×⍵)
+            xm ← 2÷⍨(1-*0J1×○1×⍵)
+            4 4 ⍴ 1 0 0 0 0 xp xm 0 0 xm xp 0 0 0 0 1
+        }
 
         ⍝ Fredkin (Controlled SWAP)
         FRK ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1
@@ -245,8 +296,8 @@
         ⍝ New ground state register
         reg ← {(⍵ 1⍴(⍳⍵)-1),(⍵ 1⍴⊂#.quapl.sng.q0)}
 
-        ⍝ Filter part of the register using qubit indices
-        filter ← {
+        ⍝ Obtain a subregister using qubit indices
+        subregister ← {
             ∧/(⍺ ∊ ⍵[;1])=0: ⍬    ⍝ No outcome when indices are incorrect
             (⍺+1)⌷⍨∘⊂⍨⍵         ⍝ Otherwise, perform a standard selection
         }
@@ -311,18 +362,6 @@
             base[new_index;] ← ⍵[;1]
             ret ← com_gate +.× base
             ret[new_index;]
-        }
-
-        ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
-        ⍝ Intelligent tensor decomposition implementation.
-
-        ⍝ Unthread a vector state into a (filtered) register - TODO
-        ⍝ This requires solving the Nearest Kronecker Product problem
-        ⍝ References:
-        ⍝ - Van Loan, C.F. and Pitsianis, N., 1993. Approximation with Kronecker products (pp. 293-314). 
-        ⍝   Springer Netherlands.
-        unthread_reg ← {
-
         }
 
     :EndNamespace
