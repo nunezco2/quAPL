@@ -1,2 +1,6 @@
 .DS_Store
 *.json
+
+/packages/*
+!/packages/apl-dependencies.txt
+!/packages/apl-buildlist.json
