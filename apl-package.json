@@ -15,9 +15,9 @@
   os_lin: 1,
   os_mac: 1,
   os_win: 1,
-  project_url: "https://github.com/NCSA/quAPL",
-  source: "",
+  project_url: "https://github.com/nunezco2/quAPL",
+  source: "APLSource/quapl.aplf",
   tags: "quantum",
   userCommandScript: "",
-  version: "0.1.0",
+  version: "0.1.0+3",
 }
