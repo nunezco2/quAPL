@@ -19,5 +19,5 @@
   source: "APLSource/quapl.aplf",
   tags: "quantum",
   userCommandScript: "",
-  version: "0.1.0+3",
+  version: "0.1.4+9",
 }

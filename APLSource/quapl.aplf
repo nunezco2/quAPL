@@ -5,392 +5,390 @@
 ⍝ The namespace `quapl` provides all required definitions to implement a
 ⍝ mathematica simulation of a quantum computing device.
 
-:Namespace quapl
     
-    ⍝ Single qubit manipulations
-    :Namespace sng
-        ⍝ Ground state |0>
-        q0 ← 2 1 ⍴ 1 0
+⍝ Single qubit manipulations
+:Namespace sng
+    ⍝ Ground state |0>
+    q0 ← 2 1 ⍴ 1 0
 
-        ⍝ Excited state |1>
-        q1 ← 2 1 ⍴ 0 1
+    ⍝ Excited state |1>
+    q1 ← 2 1 ⍴ 0 1
 
-        ⍝ Linear superposition of amplitudes
-        qx ← { #.quapl.mlt.normalize ⊃+/(q0 q1) ×.+ ⍵ }
+    ⍝ Linear superposition of amplitudes
+    qx ← { #.quapl.mlt.normalize ⊃+/(q0 q1) ×.+ ⍵ }
 
-        ⍝ Bloch state
-        bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
+    ⍝ Bloch state
+    bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
 
-        ⍝ Projection operator to 0
-        P0 ← 2 2 ⍴ 1 0 0 0
+    ⍝ Projection operator to 0
+    P0 ← 2 2 ⍴ 1 0 0 0
 
-        ⍝ Projection operator to 1
-        P1 ← 2 2 ⍴ 0 0 0 1
+    ⍝ Projection operator to 1
+    P1 ← 2 2 ⍴ 0 0 0 1
 
-    :EndNamespace
+:EndNamespace
 
-    ⍝ Multiqubit manipulations
-    :Namespace mlt
+⍝ Multiqubit manipulations
+:Namespace mlt
 
-        ⍝ Normalize a quantum state
-        normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
+    ⍝ Normalize a quantum state
+    normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
 
-        ⍝ Test that we have a valid qubit
-        valid ← {
-            ((⍴⍵)[1]=1)∧(⊃(2⍟(⍴⍵)[2])=⌈2⍟(⍴⍵)[2]): 1    ⍝ We have a bra
-            ((⍴⍵)[2]=1)∧(⊃(2⍟(⍴⍵)[1])=⌈2⍟(⍴⍵)[1]): 1    ⍝ We have a ket
-            ⍝ 0                                         ⍝ Not a qubit
-        }
+    ⍝ Test that we have a valid qubit
+    valid ← {
+        ((⍴⍵)[1]=1)∧(⊃(2⍟(⍴⍵)[2])=⌈2⍟(⍴⍵)[2]): 1    ⍝ We have a bra
+        ((⍴⍵)[2]=1)∧(⊃(2⍟(⍴⍵)[1])=⌈2⍟(⍴⍵)[1]): 1    ⍝ We have a ket
+        ⍝ 0                                         ⍝ Not a qubit
+    }
 
-        ⍝ Kronecker product
-        kpr ← ⊃ (,/ (⍪⌿ (⊂[3 4] ∘.×)))
+    ⍝ Kronecker product
+    kpr ← ⊃ (,/ (⍪⌿ (⊂[3 4] ∘.×)))
 
-        ⍝ Separate a vector state into a list of lists corresponding to 
-        separate←{
-            2=⍴⍵: ⊂⍵
-            mask ← 1=(2*(2⍟⍴⍵)-1)|⍳⍴⍵
-            partition ← mask⊂⍵
-            lcd_a ← ∨/⊃1⌷partition
-            lcd_b ← ∨/⊃2⌷partition
-            0=lcd_a: (⊂0 1),(∇⊃2⌷partition)
-            0=lcd_b: (⊂1 0),(∇⊃1⌷partition)
-            a ← (⊃1⌷partition)÷lcd_a
-            b ← (⊃2⌷partition)÷lcd_b
-            a≡b: (⊂lcd_a lcd_b),(∇ a)
-            ⊂⍵
-        }
-        
-        ⍝ Undo Kronecker product naively for vector states
-        unkpr ← {
-            vs_list ← ,⍵
-            flat_qubits ← separate vs_list
-            num_qs ← ⊃⍴flat_qubits
-            num_qs 1⍴(2 1)∘⍴¨ normalize¨ flat_qubits
-        }
-
-        ⍝ Dagger operator
-        dagger ← { ⍉+⍵ }
-
-        ⍝ Transform to ket
-        ket ← {
-            (⍴⍵)[2]=1: ⍵   ⍝ return same object if ket is column vector
-            dagger ⍵         ⍝ else return transposed conjugate
-        }
-
-        ⍝ Transform to bra
-        bra ← {
-            (⍴⍵)[1]=1: ⍵   ⍝ return same object if bra is row vector
-            dagger ⍵         ⍝ else return transposed conjugate
-        }
-
-        ⍝ Measures a vector state
-        ⍝
-        ⍝ ⍵: vector state to measure
-        ⍝ ⍺: indices of qubits to measure, if left empty all of the qubits will be measured
-        ⍝
-        ⍝ Returns a pair of items:
-        ⍝ - An array of tuples where the first item of the tuple is the index of the qubit measured and the second item,
-        ⍝    the measured state.
-        ⍝ - The final vector state 
-        measure ← {
-            n_qubits ← (2⍟1↑(⍴⍵))
-            idxs ← ⍳(1↑⍴⍵)
-            ⍺ ← (⍳n_qubits)-1
-            binary_basis ← #.quapl.circuit.tnsidx n_qubits
-            q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
-
-            measure_helper ← {
-                ⍺≡⍬: ⍵
-                idx ← (1↑⍺) + 1
-                past_results vs ← ⍵
-                select ← idx⌷[2]binary_basis
-
-                basis_0_idx ← (~select)/idxs
-                basis_1_idx ← select/idxs
-                split_idx ← basis_0_idx basis_1_idx
-
-                excited ← +/[1]((select/[1]vs)*2)
-                ground ← +/[1](((~select)/[1]vs)*2)
-                choice ← {+/(?0)>+\⍵}(ground excited)
-                vs[(⊃split_idx[1+~choice]);] ← 0
-                vs ← #.quapl.mlt.normalize vs
-                past_results≡⍬:(1↓⍺)∇((⊂((idx-1),q_levels[1+choice]))vs)
-                ((1↓⍺))∇((past_results,(⊂((idx-1),q_levels[1+choice])))vs)
-            }
-
-            ret ← ⍺ measure_helper(⍬ ⍵)
-            (⍪⊃ret[1])(⊃(ret[2]))
-        }
-
-    :EndNamespace
+    ⍝ Separate a vector state into a list of lists corresponding to 
+    separate←{
+        2=⍴⍵: ⊂⍵
+        mask ← 1=(2*(2⍟⍴⍵)-1)|⍳⍴⍵
+        partition ← mask⊂⍵
+        lcd_a ← ∨/⊃1⌷partition
+        lcd_b ← ∨/⊃2⌷partition
+        0=lcd_a: (⊂0 1),(∇⊃2⌷partition)
+        0=lcd_b: (⊂1 0),(∇⊃1⌷partition)
+        a ← (⊃1⌷partition)÷lcd_a
+        b ← (⊃2⌷partition)÷lcd_b
+        a≡b: (⊂lcd_a lcd_b),(∇ a)
+        ⊂⍵
+    }
     
-    ⍝ Quantum gates
-    :Namespace gates
+    ⍝ Undo Kronecker product naively for vector states
+    unkpr ← {
+        vs_list ← ,⍵
+        flat_qubits ← separate vs_list
+        num_qs ← ⊃⍴flat_qubits
+        num_qs 1⍴(2 1)∘⍴¨ normalize¨ flat_qubits
+    }
 
-        ⍝ Identity - nop
-        I ← 2 2 ⍴ 1 0 0 1
+    ⍝ Dagger operator
+    dagger ← { ⍉+⍵ }
 
-        ⍝ Global phase
-        G ← {I×*0J1×⍵}
+    ⍝ Transform to ket
+    ket ← {
+        (⍴⍵)[2]=1: ⍵   ⍝ return same object if ket is column vector
+        dagger ⍵         ⍝ else return transposed conjugate
+    }
 
-        ⍝ X (not)
-        X ← 2 2 ⍴ 0 1 1 0
+    ⍝ Transform to bra
+    bra ← {
+        (⍴⍵)[1]=1: ⍵   ⍝ return same object if bra is row vector
+        dagger ⍵         ⍝ else return transposed conjugate
+    }
 
-        ⍝ Y
-        Y ← 2 2 ⍴ 0 0J¯1 0J1 0
+    ⍝ Measures a vector state
+    ⍝
+    ⍝ ⍵: vector state to measure
+    ⍝ ⍺: indices of qubits to measure, if left empty all of the qubits will be measured
+    ⍝
+    ⍝ Returns a pair of items:
+    ⍝ - An array of tuples where the first item of the tuple is the index of the qubit measured and the second item,
+    ⍝    the measured state.
+    ⍝ - The final vector state 
+    measure ← {
+        n_qubits ← (2⍟1↑(⍴⍵))
+        idxs ← ⍳(1↑⍴⍵)
+        ⍺ ← (⍳n_qubits)-1
+        binary_basis ← #.quapl.circuit.tnsidx n_qubits
+        q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
 
-        ⍝ Z (phase flip)
-        Z ← 2 2 ⍴ 1 0 0 ¯1
+        measure_helper ← {
+            ⍺≡⍬: ⍵
+            idx ← (1↑⍺) + 1
+            past_results vs ← ⍵
+            select ← idx⌷[2]binary_basis
 
-        ⍝ S (√Z)
-        S ← 2 2 ⍴ 1 0 0 0J1
+            basis_0_idx ← (~select)/idxs
+            basis_1_idx ← select/idxs
+            split_idx ← basis_0_idx basis_1_idx
 
-        ⍝ V (√X)
-        V ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
-
-        ⍝ H (Hadamard-Walsh)
-        H ← (÷2*0.5)×(2 2 ⍴ 1 1 1 ¯1)
-
-        ⍝ P (phase shift)
-        P ← {
-            ph ← *0J1×⍵
-            2 2 ⍴ ((1 0 0),ph)
+            excited ← +/[1]((select/[1]vs)*2)
+            ground ← +/[1](((~select)/[1]vs)*2)
+            choice ← {+/(?0)>+\⍵}(ground excited)
+            vs[(⊃split_idx[1+~choice]);] ← 0
+            vs ← #.quapl.mlt.normalize vs
+            past_results≡⍬:(1↓⍺)∇((⊂((idx-1),q_levels[1+choice]))vs)
+            ((1↓⍺))∇((past_results,(⊂((idx-1),q_levels[1+choice])))vs)
         }
 
-        ⍝ T (4-th root of Z)
-        T ← 2 2 ⍴ ((1 0 0),*0J1×0.25×○1)
+        ret ← ⍺ measure_helper(⍬ ⍵)
+        (⍪⊃ret[1])(⊃(ret[2]))
+    }
 
-        ⍝ Rx (rotation in x)
-        Rx ← {
-            a←2○⍵÷2
-            b←0J¯1×1○⍵÷2
-            2 2 ⍴ a b b a
-        }
+:EndNamespace
 
-        ⍝ Ry (rotation in y)
-        Ry ← {
-            a ← 2○⍵÷2
-            b ← 1○⍵÷2
-            bm ← ¯1×b
-            2 2 ⍴ a bm b a
-        }
+⍝ Quantum gates
+:Namespace gates
 
-        ⍝ Rz (rotation in z)
-        Rz ← {
-            am ← *0J¯1×⍵÷2
-            ap ← *0J1×⍵÷2
-            2 2 ⍴ am 0 0 ap
-        }
+    ⍝ Identity - nop
+    I ← 2 2 ⍴ 1 0 0 1
 
-        ⍝ U (generalized rotation)
-        U ← {
-            (th ph lm) ← ⍵
-            a ← 2○th÷2
-            b ← ¯1×(*0J¯1×lm)×1○th÷2
-            c ← (*0J¯1×lm)×1○th÷2
-            d ← (*0J1×(ph + lm))×a
-            2 2 ⍴ a b c d
-        }
+    ⍝ Global phase
+    G ← {I×*0J1×⍵}
 
-        ⍝ CX (CNOT)
-        CNOT ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0
+    ⍝ X (not)
+    X ← 2 2 ⍴ 0 1 1 0
 
-        ⍝ Square root of NOT
-        sqNOT ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
+    ⍝ Y
+    Y ← 2 2 ⍴ 0 0J¯1 0J1 0
 
-        ⍝ XNOR
-        XNOR ← 4 4 ⍴ 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 1
+    ⍝ Z (phase flip)
+    Z ← 2 2 ⍴ 1 0 0 ¯1
 
-        ⍝ CY
-        CY ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 0J¯1 0 0 0J1 
+    ⍝ S (√Z)
+    S ← 2 2 ⍴ 1 0 0 0J1
 
-        ⍝ CZ
-        CZ ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ¯1
+    ⍝ V (√X)
+    V ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
 
-        ⍝ CP (controlled phase)
-        CP ← {
-            ph ← *0J1×⍵
-            4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ph
-        }
+    ⍝ H (Hadamard-Walsh)
+    H ← (÷2*0.5)×(2 2 ⍴ 1 1 1 ¯1)
 
-        ⍝ CS (controlled phase S)
-        CS ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0J1 }
+    ⍝ P (phase shift)
+    P ← {
+        ph ← *0J1×⍵
+        2 2 ⍴ ((1 0 0),ph)
+    }
 
-        ⍝ XX (XX interaction)
-        XX ← {
-            x ← 2○⍵÷2
-            y ← 0J¯1×1○⍵÷2
-            4 4 ⍴ x 0 0 y 0 x y 0 0 y x 0 y 0 0 x
-        }
+    ⍝ T (4-th root of Z)
+    T ← 2 2 ⍴ ((1 0 0),*0J1×0.25×○1)
 
-        ⍝ YY (YY interaction)
-        YY ← {
-            x ← 2○⍵÷2
-            yb ← 1○⍵÷2
-            yp ← 0J1×yb
-            ym ← 0J¯1×yb
-            4 4 ⍴ x 0 0 yp 0 x ym 0 0 ym x 0 yp 0 0 x
-        }
+    ⍝ Rx (rotation in x)
+    Rx ← {
+        a←2○⍵÷2
+        b←0J¯1×1○⍵÷2
+        2 2 ⍴ a b b a
+    }
 
-        ⍝ ZZ (ZZ interaction)
-        ZZ ← {
-            xm ← *0J¯1×⍵÷2
-            xp ← *0J1×⍵÷2
-            4 4 ⍴ xm 0 0 0 0 xp 0 0 0 0 xp 0 0 0 0 xm
-        }
+    ⍝ Ry (rotation in y)
+    Ry ← {
+        a ← 2○⍵÷2
+        b ← 1○⍵÷2
+        bm ← ¯1×b
+        2 2 ⍴ a bm b a
+    }
 
-        ⍝ XY (XX + YY interaction)
-        XY ← {
-            x ← 2○⍵÷2
-            y ← 0J¯1×1○⍵÷2
-            4 4 ⍴ 1 0 0 0 0 x y 0 0 y x 0 0 0 0 1
-        }
+    ⍝ Rz (rotation in z)
+    Rz ← {
+        am ← *0J¯1×⍵÷2
+        ap ← *0J1×⍵÷2
+        2 2 ⍴ am 0 0 ap
+    }
 
-        ⍝ DCNOT (double-controlled CNOT)
-        DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
+    ⍝ U (generalized rotation)
+    U ← {
+        (th ph lm) ← ⍵
+        a ← 2○th÷2
+        b ← ¯1×(*0J¯1×lm)×1○th÷2
+        c ← (*0J¯1×lm)×1○th÷2
+        d ← (*0J1×(ph + lm))×a
+        2 2 ⍴ a b c d
+    }
+
+    ⍝ CX (CNOT)
+    CNOT ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 1 0 0 1 0
+
+    ⍝ Square root of NOT
+    sqNOT ← (÷2)×(2 2 ⍴ 1J1 1J¯1 1J¯1 1J1)
+
+    ⍝ XNOR
+    XNOR ← 4 4 ⍴ 0 1 0 0 1 0 0 0 0 0 1 0 0 0 0 1
+
+    ⍝ CY
+    CY ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 0 0J¯1 0 0 0J1 
+
+    ⍝ CZ
+    CZ ← 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ¯1
+
+    ⍝ CP (controlled phase)
+    CP ← {
+        ph ← *0J1×⍵
+        4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 ph
+    }
+
+    ⍝ CS (controlled phase S)
+    CS ← { 4 4 ⍴ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0J1 }
+
+    ⍝ XX (XX interaction)
+    XX ← {
+        x ← 2○⍵÷2
+        y ← 0J¯1×1○⍵÷2
+        4 4 ⍴ x 0 0 y 0 x y 0 0 y x 0 y 0 0 x
+    }
+
+    ⍝ YY (YY interaction)
+    YY ← {
+        x ← 2○⍵÷2
+        yb ← 1○⍵÷2
+        yp ← 0J1×yb
+        ym ← 0J¯1×yb
+        4 4 ⍴ x 0 0 yp 0 x ym 0 0 ym x 0 yp 0 0 x
+    }
+
+    ⍝ ZZ (ZZ interaction)
+    ZZ ← {
+        xm ← *0J¯1×⍵÷2
+        xp ← *0J1×⍵÷2
+        4 4 ⍴ xm 0 0 0 0 xp 0 0 0 0 xp 0 0 0 0 xm
+    }
+
+    ⍝ XY (XX + YY interaction)
+    XY ← {
+        x ← 2○⍵÷2
+        y ← 0J¯1×1○⍵÷2
+        4 4 ⍴ 1 0 0 0 0 x y 0 0 y x 0 0 0 0 1
+    }
+
+    ⍝ DCNOT (double-controlled CNOT)
+    DCNOT ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 0 0 1 0 1 0 0
+    
+    ⍝ SWAP
+    SWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1
+
+    ⍝ Imaginary SWAP
+    iSWAP ← 4 4 ⍴ 1 0 0 0 0 0 0J1 0 0 0J1 0 0 0 0 0 1
+
+    ⍝ Fermionic SWAP
+    fSWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 ¯1
+
+    ⍝ Square root SWAP
+    sqSWAP ← 4 4 ⍴ 1 0 0 0 0 ((1+0J1)×÷2) ((1-0J1)×÷2) 0 0 ((1-0J1)×÷2) ((1+0J1)×÷2) 0 0 0 1
+
+    ⍝ Square root imaginary SWAP
+    sqiSWAP ← 4 4 ⍴ 1 0 0 0 0 (1÷2*0.5) (0J1÷2*0.5) 0 0 (0J1÷2*0.5) (1÷2*0.5) 0 0 0 0 1
+
+    ⍝ SWAP raised to the a-th power
+    aSWAP ← {
+        xp ← 2÷⍨(1+*0J1×○1×⍵)
+        xm ← 2÷⍨(1-*0J1×○1×⍵)
+        4 4 ⍴ 1 0 0 0 0 xp xm 0 0 xm xp 0 0 0 0 1
+    }
+
+    ⍝ Fredkin (Controlled SWAP)
+    FRK ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1
+
+    ⍝ Toffoli (Doubly-controlled not)
+    TOF ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0
+
+    ⍝ Generalized controlled gate with k-qubit controls
+    ⍝ ⍺: number of (preceding) control qubits
+    ⍝ ⍵: gate
+    gCTR ← {
+        (n _) ← ⍴ ⍵
+        ID ← {⍵ ⍵ ρ 1, ⍵ρ0}
+        gate ← ID 2*(⍺ + 2⍟n)
+        ((-⍴⍵)↑gate) ← ⍵
+        gate
+    }
+
+:EndNamespace
+
+⍝ Circuit assembly
+:Namespace circuit
+    
+    ⍝ New ground state register
+    reg ← {(⍵ 1⍴(⍳⍵)-1),(⍵ 1⍴⊂#.quapl.sng.q0)}
+
+    ⍝ Obtain a subregister using qubit indices
+    subregister ← {
+        ∧/(⍺ ∊ ⍵[;1])=0: ⍬    ⍝ No outcome when indices are incorrect
+        (⍺+1)⌷⍨∘⊂⍨⍵         ⍝ Otherwise, perform a standard selection
+    }
+
+    ⍝ Thread a set of Hilbert space entities into a larger Hilbert space entity
+    thread ← ⊃ { #.quapl.mlt.kpr/⍵ }
+
+    ⍝ Thread a (filtered) register into a vector state
+    thread_reg ← {
+        ⊃ #.quapl.mlt.kpr/⍵[;2]
+    }
+
+    ⍝ Thread a gate set into a single operation
+    thread_gate ← {
+        ⊃ #.quapl.mlt.kpr/⍵
+    }
+
+    ⍝ Unthread a vector state and produce a new register
+    unthread_vs ← {
+        num_qs ← 1⌷2⍟⍴⍵
+        (num_qs 1 ⍴ (⍳ num_qs)-1),(#.quapl.mlt.unkpr ⍵)
+    }
+
+    ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
+    ⍝ Naïve implementation.
+    ⍝ 
+    ⍝ We benefit from the property relating permutations to binary represetations and how
+    ⍝ it manifests into concrete permutations of qubits when re-arranging circuits, after
+    ⍝ translation into a vector state.
+
+    ⍝ Build a table with the full binary representation of (2^n, 1) indices of an C^n vector
+    tnsidx ← {⍉(⍵ ⍴ 2) ⊤ ((2*⍵) ⍴ (⍳(2*⍵)) - 1)}
+
+    ⍝ Map a qubit reordering into the tensor product row reordering
+    qrdtotrd ← {1 + 2⊥⍉⍵⌷[2]⍨∘⊂⍨tnsidx ⍺}
+
+    ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
+    ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
+    ⍝
+    ⍝ ⍺[1]: The index of the qubits in which the gates are applied 
+    ⍝ ⍺[2]: The set of gates to apply to those qubits
+    ⍝ ⍵: the target vector state
+    stage←{
+        idx gtx ← ⍺
+        n_qubits ← (2⍟1↑(⍴⍵))
+        qubits ← (⍳(2⍟1↑(⍴⍵)))-1
+
+        ⍝ Compute missing ids and identity gates
+        midx ← (~(qubits∊idx))/qubits
+        ids ← {#.quapl.gates.I}¨midx
+        new_idx ← idx,midx
+        new_gtx ← gtx,ids
+
+        ⍝ Obtain the resulting permutation for the qubit reordering
+        new_index ← n_qubits #.quapl.circuit.qrdtotrd (new_idx + 1)
         
-        ⍝ SWAP
-        SWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1
+        ⍝ Compute gate to apply
+        com_gate ← ⊃#.quapl.mlt.kpr/new_gtx
 
-        ⍝ Imaginary SWAP
-        iSWAP ← 4 4 ⍴ 1 0 0 0 0 0 0J1 0 0 0J1 0 0 0 0 0 1
+        ⍝ Apply the gate and return vector state with restored order
+        base ← ((⍴ new_index),1) ⍴ 0
+        base[new_index;] ← ⍵[;1]
+        ret ← com_gate +.× base
+        ret[new_index;]
+    }
 
-        ⍝ Fermionic SWAP
-        fSWAP ← 4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 ¯1
+:EndNamespace
 
-        ⍝ Square root SWAP
-        sqSWAP ← 4 4 ⍴ 1 0 0 0 0 ((1+0J1)×÷2) ((1-0J1)×÷2) 0 0 ((1-0J1)×÷2) ((1+0J1)×÷2) 0 0 0 1
+:Namespace show
+    ⍝ Represent a single qubit
+    q ← {
+        #.quapl.sng.q0≡⍵: '|0⟩'
+        #.quapl.sng.q1≡⍵: '|1⟩'
+        (⍕⍵[1;1]),'|0⟩+',(⍕⍵[2;1]),'|1⟩'
+    }
 
-        ⍝ Square root imaginary SWAP
-        sqiSWAP ← 4 4 ⍴ 1 0 0 0 0 (1÷2*0.5) (0J1÷2*0.5) 0 0 (0J1÷2*0.5) (1÷2*0.5) 0 0 0 0 1
+    b ← {
+        #.quapl.sng.q0≡⍵: '0'
+        #.quapl.sng.q1≡⍵: '1'
+        '𝜑'
+    }
 
-        ⍝ SWAP raised to the a-th power
-        aSWAP ← {
-            xp ← 2÷⍨(1+*0J1×○1×⍵)
-            xm ← 2÷⍨(1-*0J1×○1×⍵)
-            4 4 ⍴ 1 0 0 0 0 xp xm 0 0 xm xp 0 0 0 0 1
-        }
+    ⍝ Represent a register without expanding superposition or entanglement
+    r ← {
+        '|',(b¨⌽⍵[;2]),'⟩'
+    }
 
-        ⍝ Fredkin (Controlled SWAP)
-        FRK ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1
-
-        ⍝ Toffoli (Doubly-controlled not)
-        TOF ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0
-
-        ⍝ Generalized controlled gate with k-qubit controls
-        ⍝ ⍺: number of (preceding) control qubits
-        ⍝ ⍵: gate
-        gCTR ← {
-            (n _) ← ⍴ ⍵
-            ID ← {⍵ ⍵ ρ 1, ⍵ρ0}
-            gate ← ID 2*(⍺ + 2⍟n)
-            ((-⍴⍵)↑gate) ← ⍵
-            gate
-        }
-
-    :EndNamespace
-
-    ⍝ Circuit assembly
-    :Namespace circuit
-        
-        ⍝ New ground state register
-        reg ← {(⍵ 1⍴(⍳⍵)-1),(⍵ 1⍴⊂#.quapl.sng.q0)}
-
-        ⍝ Obtain a subregister using qubit indices
-        subregister ← {
-            ∧/(⍺ ∊ ⍵[;1])=0: ⍬    ⍝ No outcome when indices are incorrect
-            (⍺+1)⌷⍨∘⊂⍨⍵         ⍝ Otherwise, perform a standard selection
-        }
-
-        ⍝ Thread a set of Hilbert space entities into a larger Hilbert space entity
-        thread ← ⊃ { #.quapl.mlt.kpr/⍵ }
-
-        ⍝ Thread a (filtered) register into a vector state
-        thread_reg ← {
-            ⊃ #.quapl.mlt.kpr/⍵[;2]
-        }
-
-        ⍝ Thread a gate set into a single operation
-        thread_gate ← {
-            ⊃ #.quapl.mlt.kpr/⍵
-        }
-
-        ⍝ Unthread a vector state and produce a new register
-        unthread_vs ← {
-            num_qs ← 1⌷2⍟⍴⍵
-            (num_qs 1 ⍴ (⍳ num_qs)-1),(#.quapl.mlt.unkpr ⍵)
-        }
-
-        ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
-        ⍝ Naïve implementation.
-        ⍝ 
-        ⍝ We benefit from the property relating permutations to binary represetations and how
-        ⍝ it manifests into concrete permutations of qubits when re-arranging circuits, after
-        ⍝ translation into a vector state.
-
-        ⍝ Build a table with the full binary representation of (2^n, 1) indices of an C^n vector
-        tnsidx ← {⍉(⍵ ⍴ 2) ⊤ ((2*⍵) ⍴ (⍳(2*⍵)) - 1)}
-
-        ⍝ Map a qubit reordering into the tensor product row reordering
-        qrdtotrd ← {1 + 2⊥⍉⍵⌷[2]⍨∘⊂⍨tnsidx ⍺}
-
-        ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
-        ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
-        ⍝
-        ⍝ ⍺[1]: The index of the qubits in which the gates are applied 
-        ⍝ ⍺[2]: The set of gates to apply to those qubits
-        ⍝ ⍵: the target vector state
-        stage←{
-            idx gtx ← ⍺
-            n_qubits ← (2⍟1↑(⍴⍵))
-            qubits ← (⍳(2⍟1↑(⍴⍵)))-1
-
-            ⍝ Compute missing ids and identity gates
-            midx ← (~(qubits∊idx))/qubits
-            ids ← {#.quapl.gates.I}¨midx
-            new_idx ← idx,midx
-            new_gtx ← gtx,ids
-
-            ⍝ Obtain the resulting permutation for the qubit reordering
-            new_index ← n_qubits #.quapl.circuit.qrdtotrd (new_idx + 1)
-            
-            ⍝ Compute gate to apply
-            com_gate ← ⊃#.quapl.mlt.kpr/new_gtx
-
-            ⍝ Apply the gate and return vector state with restored order
-            base ← ((⍴ new_index),1) ⍴ 0
-            base[new_index;] ← ⍵[;1]
-            ret ← com_gate +.× base
-            ret[new_index;]
-        }
-
-    :EndNamespace
-
-    :Namespace show
-        ⍝ Represent a single qubit
-        q ← {
-            #.quapl.sng.q0≡⍵: '|0⟩'
-            #.quapl.sng.q1≡⍵: '|1⟩'
-            (⍕⍵[1;1]),'|0⟩+',(⍕⍵[2;1]),'|1⟩'
-        }
-
-        b ← {
-            #.quapl.sng.q0≡⍵: '0'
-            #.quapl.sng.q1≡⍵: '1'
-            '𝜑'
-        }
-
-        ⍝ Represent a register without expanding superposition or entanglement
-        r ← {
-            '|',(b¨⌽⍵[;2]),'⟩'
-        }
-
-        ⍝ Represent in-register qubits
-        r_in ← {
-            rep ← ⍵
-            rep[;2] ← q¨ ⍵[;2]
-            rep
-        }
-        
-    :EndNamespace
+    ⍝ Represent in-register qubits
+    r_in ← {
+        rep ← ⍵
+        rep[;2] ← q¨ ⍵[;2]
+        rep
+    }
+    
 :EndNamespace
