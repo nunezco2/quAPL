@@ -82,45 +82,6 @@
         dagger ⍵         ⍝ else return transposed conjugate
     }
 
-    ⍝ Measures a vector state
-    ⍝
-    ⍝ ⍵: vector state to measure
-    ⍝ ⍺: indices of qubits to measure, if left empty all of the qubits will be measured
-    ⍝
-    ⍝ Returns a pair of items:
-    ⍝ - An array of tuples where the first item of the tuple is the index of the qubit measured and the second item,
-    ⍝    the measured state.
-    ⍝ - The final vector state 
-    measure ← {
-        n_qubits ← (2⍟1↑(⍴⍵))
-        idxs ← ⍳(1↑⍴⍵)
-        ⍺ ← (⍳n_qubits)-1
-        binary_basis ← #.quapl.circuit.tnsidx n_qubits
-        q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
-
-        measure_helper ← {
-            ⍺≡⍬: ⍵
-            idx ← (1↑⍺) + 1
-            past_results vs ← ⍵
-            select ← idx⌷[2]binary_basis
-
-            basis_0_idx ← (~select)/idxs
-            basis_1_idx ← select/idxs
-            split_idx ← basis_0_idx basis_1_idx
-
-            excited ← +/[1]((select/[1]vs)*2)
-            ground ← +/[1](((~select)/[1]vs)*2)
-            choice ← {+/(?0)>+\⍵}(ground excited)
-            vs[(⊃split_idx[1+~choice]);] ← 0
-            vs ← #.quapl.mlt.normalize vs
-            past_results≡⍬:(1↓⍺)∇((⊂((idx-1),q_levels[1+choice]))vs)
-            ((1↓⍺))∇((past_results,(⊂((idx-1),q_levels[1+choice])))vs)
-        }
-
-        ret ← ⍺ measure_helper(⍬ ⍵)
-        (⍪⊃ret[1])(⊃(ret[2]))
-    }
-
 :EndNamespace
 
 ⍝ Quantum gates
@@ -363,6 +324,53 @@
         ret[new_index;]
     }
 
+:EndNamespace
+
+:Namespace measurement
+    ⍝ Measures a vector state
+    ⍝
+    ⍝ ⍵: vector state to measure
+    ⍝ ⍺: indices of qubits to measure, if left empty all of the qubits will be measured
+    ⍝
+    ⍝ Returns a pair of items:
+    ⍝ - An array of tuples where the first item of the tuple is the index of the qubit measured and the second item,
+    ⍝    the measured state.
+    ⍝ - The final vector state 
+    measure ← {
+        n_qubits ← (2⍟1↑(⍴⍵))
+        idxs ← ⍳(1↑⍴⍵)
+        ⍺ ← (⍳n_qubits)-1
+        binary_basis ← #.quapl.circuit.tnsidx n_qubits
+        q_levels ← #.quapl.sng.q0 #.quapl.sng.q1
+
+        measure_helper ← {
+            ⍺≡⍬: ⍵
+            idx ← (1↑⍺) + 1
+            past_results vs ← ⍵
+            select ← idx⌷[2]binary_basis
+
+            basis_0_idx ← (~select)/idxs
+            basis_1_idx ← select/idxs
+            split_idx ← basis_0_idx basis_1_idx
+
+            excited ← +/[1]((select/[1]vs)*2)
+            ground ← +/[1](((~select)/[1]vs)*2)
+            choice ← {+/(?0)>+\⍵}(ground excited)
+            vs[(⊃split_idx[1+~choice]);] ← 0
+            vs ← #.quapl.mlt.normalize vs
+            past_results≡⍬:(1↓⍺)∇((⊂((idx-1),q_levels[1+choice]))vs)
+            ((1↓⍺))∇((past_results,(⊂((idx-1),q_levels[1+choice])))vs)
+        }
+
+        ret ← ⍺ measure_helper(⍬ ⍵)
+        (⍪⊃ret[1])(⊃(ret[2]))
+    }
+:EndNamespace
+
+:Namespace testing
+    ⍝ Bach: testing functions go in this namespace
+
+    
 :EndNamespace
 
 :Namespace show
