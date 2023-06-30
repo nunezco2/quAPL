@@ -368,8 +368,13 @@
 :EndNamespace
 
 :Namespace testing
-    ⍝ Bach: testing functions go in this namespace
-
+    test_unitary ← { 
+        sum←⍵+.×(⍉+⍵)
+        a ←  ⍴ sum
+        b ← a[1]
+        test ← (⍳b)∘.=⍳b
+        sum ≡ test
+    }
     
 :EndNamespace
 
