@@ -369,7 +369,7 @@
 
 :Namespace testing
     test_unitary ← { 
-        sum←⍵+.×(⍉+⍵)
+        sum ← ⍵+.×(⍉+⍵)
         a ←  ⍴ sum
         b ← a[1]
         test ← (⍳b)∘.=⍳b
