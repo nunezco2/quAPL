@@ -1,0 +1,55 @@
+⍝ Multiqubit manipulations
+:Namespace mlt
+
+    ⍝ Normalize a quantum state
+    normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
+
+    ⍝ Test that we have a valid qubit
+    valid ← {
+        ((⍴⍵)[1]=1)∧(⊃(2⍟(⍴⍵)[2])=⌈2⍟(⍴⍵)[2]): 1    ⍝ We have a bra
+        ((⍴⍵)[2]=1)∧(⊃(2⍟(⍴⍵)[1])=⌈2⍟(⍴⍵)[1]): 1    ⍝ We have a ket
+        ⍝ 0                                         ⍝ Not a qubit
+    }
+
+    ⍝ Kronecker product
+    kpr ← ⊃ (,/ (⍪⌿ (⊂[3 4] ∘.×)))
+
+    ⍝ Separate a vector state into a list of lists corresponding to 
+    separate←{
+        2=⍴⍵: ⊂⍵
+        mask ← 1=(2*(2⍟⍴⍵)-1)|⍳⍴⍵
+        partition ← mask⊂⍵
+        lcd_a ← ∨/⊃1⌷partition
+        lcd_b ← ∨/⊃2⌷partition
+        0=lcd_a: (⊂0 1),(∇⊃2⌷partition)
+        0=lcd_b: (⊂1 0),(∇⊃1⌷partition)
+        a ← (⊃1⌷partition)÷lcd_a
+        b ← (⊃2⌷partition)÷lcd_b
+        a≡b: (⊂lcd_a lcd_b),(∇ a)
+        ⊂⍵
+    }
+    
+    ⍝ Undo Kronecker product naively for vector states
+    unkpr ← {
+        vs_list ← ,⍵
+        flat_qubits ← separate vs_list
+        num_qs ← ⊃⍴flat_qubits
+        num_qs 1⍴(2 1)∘⍴¨ normalize¨ flat_qubits
+    }
+
+    ⍝ Dagger operator
+    dagger ← { ⍉+⍵ }
+
+    ⍝ Transform to ket
+    ket ← {
+        (⍴⍵)[2]=1: ⍵   ⍝ return same object if ket is column vector
+        dagger ⍵         ⍝ else return transposed conjugate
+    }
+
+    ⍝ Transform to bra
+    bra ← {
+        (⍴⍵)[1]=1: ⍵   ⍝ return same object if bra is row vector
+        dagger ⍵         ⍝ else return transposed conjugate
+    }
+
+:EndNamespace

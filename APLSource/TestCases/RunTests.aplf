@@ -1,0 +1,5 @@
+ RunTests;htmlFilename;verbose;option
+⍝ 1. Prepares the test framework
+⍝ 2. Runs all test cases
+ Prepare
+ T.Run 0
