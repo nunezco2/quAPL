@@ -1,0 +1,75 @@
+⍝ Circuit assembly
+:Namespace circuit
+    
+    ⍝ New ground state register
+    reg ← {(⍵ 1⍴(⍳⍵)-1),(⍵ 1⍴⊂#.quapl.sng.q0)}
+
+    ⍝ Obtain a subregister using qubit indices
+    subregister ← {
+        ∧/(⍺ ∊ ⍵[;1])=0: ⍬    ⍝ No outcome when indices are incorrect
+        (⍺+1)⌷⍨∘⊂⍨⍵         ⍝ Otherwise, perform a standard selection
+    }
+
+    ⍝ Thread a set of Hilbert space entities into a larger Hilbert space entity
+    thread ← ⊃ { #.quapl.mlt.kpr/⍵ }
+
+    ⍝ Thread a (filtered) register into a vector state
+    thread_reg ← {
+        ⊃ #.quapl.mlt.kpr/⍵[;2]
+    }
+
+    ⍝ Thread a gate set into a single operation
+    thread_gate ← {
+        ⊃ #.quapl.mlt.kpr/⍵
+    }
+
+    ⍝ Unthread a vector state and produce a new register
+    unthread_vs ← {
+        num_qs ← 1⌷2⍟⍴⍵
+        (num_qs 1 ⍴ (⍳ num_qs)-1),(#.quapl.mlt.unkpr ⍵)
+    }
+
+    ⍝ Compute the permutation p required to re-assemble a circuit stage based on a register
+    ⍝ Naïve implementation.
+    ⍝ 
+    ⍝ We benefit from the property relating permutations to binary represetations and how
+    ⍝ it manifests into concrete permutations of qubits when re-arranging circuits, after
+    ⍝ translation into a vector state.
+
+    ⍝ Build a table with the full binary representation of (2^n, 1) indices of an C^n vector
+    tnsidx ← {⍉(⍵ ⍴ 2) ⊤ ((2*⍵) ⍴ (⍳(2*⍵)) - 1)}
+
+    ⍝ Map a qubit reordering into the tensor product row reordering
+    qrdtotrd ← {1 + 2⊥⍉⍵⌷[2]⍨∘⊂⍨tnsidx ⍺}
+
+    ⍝ Apply a stage to a current vector state representing n qubits, with the given gates and
+    ⍝ a stated gate-dependent reordering (reordering a C^2 vector is less expensive than the gates)
+    ⍝
+    ⍝ ⍺[1]: The index of the qubits in which the gates are applied 
+    ⍝ ⍺[2]: The set of gates to apply to those qubits
+    ⍝ ⍵: the target vector state
+    stage←{
+        idx gtx ← ⍺
+        n_qubits ← (2⍟1↑(⍴⍵))
+        qubits ← (⍳(2⍟1↑(⍴⍵)))-1
+
+        ⍝ Compute missing ids and identity gates
+        midx ← (~(qubits∊idx))/qubits
+        ids ← {#.quapl.gates.I}¨midx
+        new_idx ← idx,midx
+        new_gtx ← gtx,ids
+
+        ⍝ Obtain the resulting permutation for the qubit reordering
+        new_index ← n_qubits #.quapl.circuit.qrdtotrd (new_idx + 1)
+        
+        ⍝ Compute gate to apply
+        com_gate ← ⊃#.quapl.mlt.kpr/new_gtx
+
+        ⍝ Apply the gate and return vector state with restored order
+        base ← ((⍴ new_index),1) ⍴ 0
+        base[new_index;] ← ⍵[;1]
+        ret ← com_gate +.× base
+        ret[new_index;]
+    }
+
+:EndNamespace

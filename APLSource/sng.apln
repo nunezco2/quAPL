@@ -1,0 +1,21 @@
+⍝ Single qubit manipulations
+:Namespace sng
+    ⍝ Ground state |0>
+    q0 ← 2 1 ⍴ 1 0
+
+    ⍝ Excited state |1>
+    q1 ← 2 1 ⍴ 0 1
+
+    ⍝ Linear superposition of amplitudes
+    qx ← { #.quapl.mlt.normalize ⊃+/(q0 q1) ×.+ ⍵ }
+
+    ⍝ Bloch state
+    bloch ← { (2 ○ (⍵÷2)), (*(0J1×⍺))×(1 ○ (⍵÷2)) }
+
+    ⍝ Projection operator to 0
+    P0 ← 2 2 ⍴ 1 0 0 0
+
+    ⍝ Projection operator to 1
+    P1 ← 2 2 ⍴ 0 0 0 1
+
+:EndNamespace
