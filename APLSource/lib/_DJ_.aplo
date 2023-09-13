@@ -1,4 +1,4 @@
- DJ←{
+ _DJ_←{
      ⍝ Deutsch–Jozsa algorithm.
      ⍝ Takes a vector state in the 0 state (all qubits are in the 0 states).
      ⍝ Applies the algorithm with the passed oracle and returns the vector state without being measured.

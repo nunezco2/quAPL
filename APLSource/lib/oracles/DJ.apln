@@ -1,4 +1,6 @@
-:Namespace oracles
+:Namespace DJ
+    ⍝ Namespace containing all of the oracles used for the Deutsch-Jozsa algorithm.
+
     ⍝ All oracles should know that the first item in the register that they are accepting
     ⍝ is the ancilla qubit in the state |->
 
