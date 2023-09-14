@@ -1,0 +1,29 @@
+:Namespace DJ
+    ⍝ Namespace containing all of the oracles used for the Deutsch-Jozsa algorithm.
+
+    ⍝ All oracles should know that the first item in the register that they are accepting
+    ⍝ is the ancilla qubit in the state |->
+
+    CNOT ← #.quapl.gates.CNOT
+    stage ← #.quapl.circuit.stage
+
+      zero ← {
+          ⍵
+      }
+
+      XOR ← {
+          n_qubits ← (2⍟1⌷⍴⍵)-1
+     
+          apply ← {
+              ⍝ Recursive function that applies an XOR gate from all qubits into the ancilla.
+              ⍝ Ancilla should be in the index 0.
+              x ← 1↑⍺
+              a ← 1↓⍺
+              ret ← (((⊃x)0) (⊂CNOT)) stage ⍵
+              (⍴a)=0: ret
+              a ∇ ret
+          }
+          (⍳n_qubits) apply ⍵
+      }
+
+:EndNamespace

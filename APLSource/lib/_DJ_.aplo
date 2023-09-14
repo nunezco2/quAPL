@@ -1,0 +1,49 @@
+ _DJ_ ← {
+     ⍝ Deutsch–Jozsa algorithm.
+     ⍝ Takes a vector state in the 0 state (all qubits are in the 0 states).
+     ⍝ Applies the algorithm with the passed oracle and returns the vector state without being measured.
+     ⍝
+     ⍝ Whenever the idiom {⍵:X ⋄ Y}Bs appears, The function is checking if the ancilla qubit is 0 to not apply any SWAPs
+     ⍝
+     ⍝ ⍵: Initial vector state in the 0 state.
+     ⍝ ⍺: The index of the ancilla. If this is not passed the ancilla will be 0
+     ⍝ ⍺⍺: Oracle to be used in the DJ algorithm.
+
+     ⍝ Define the functions that we are going to use
+     X ← #.quapl.gates.X
+     H ← #.quapl.gates.H
+     CNOT ← #.quapl.gates.CNOT
+     SWAP ← #.quapl.gates.SWAP
+     stage ← #.quapl.circuit.stage
+     ⍺ ← 0
+
+     prep ← {
+         ⍝ ⍵: Vector state to apply X and SWAP to the ancilla qubit
+         ⍝ ⍺: Index of the ancilla qubit
+         mid_state ← ((⍺)(⊂X))stage ⍵
+         ⍺ {⍵:(((0 ⍺) (⊂SWAP)) stage mid_state) ⋄ mid_state} (⍺≠0)
+     }
+
+     unprep ← {
+         ⍝ ⍵: Vector state to undo prep apply X and SWAP to the ancilla qubit
+         ⍝ ⍺: Index of the ancilla qubit
+         mid_state ← ((⍺) (⊂X)) stage ⍵
+         ⍺ {: (((0 ⍺) (⊂SWAP) )stage mid_state) ⋄ mid_state} (⍺≠0)
+     }
+
+     ⍝ Preps the state according the ancilla qubit.
+     ini ← ⍺ prep ⍵
+     n_qubits ← (2⍟1⌷⍴ini)
+
+     stg_ctrl ← (((⍳n_qubits)-1) ({H}¨⍳n_qubits))
+
+     ⍝ Create the superposition for the oracle
+     mid_state ← stg_ctrl stage ini
+
+     ⍝ pass to the oracle
+     oracle_state ← ⍺⍺ mid_state
+     final_state ← stg_ctrl stage oracle_state
+
+     ⍝ Unprep the state
+     ⍺ unprep final_state
+ }
