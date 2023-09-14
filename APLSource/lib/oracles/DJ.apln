@@ -6,18 +6,25 @@
 
     CNOT ← #.quapl.gates.CNOT
     stage ← #.quapl.circuit.stage
-    
-    zero←{
-       ⍵
-    }
 
-    XOR←{
-        n_qubits←(2⍟1⌷⍴⍵)-1
-        ⍝ 
-        i_state ← ⍵
+      zero←{
+          ⍵
+      }
 
+      XOR←{
+          n_qubits←(2⍟1⌷⍴⍵)-1
+     
+          apply←{
+              x←1↑⍺
+              a←1↓⍺
+              ret←(((⊃x)0)(⊂CNOT))stage ⍵
+              (⍴a)=0:ret
+              a ∇ ret
+          }
+     
+     
         ⍝ Make the stage a function to iterate it through all indices
-        ⊃({(⍵ 0)(⊂CNOT) stage i_state}/ (⍳n_qubits))
-    }
+          (⍳n_qubits)apply ⍵
+      }
 
 :EndNamespace
