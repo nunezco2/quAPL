@@ -15,15 +15,14 @@
           n_qubits←(2⍟1⌷⍴⍵)-1
      
           apply←{
+              ⍝ Recursive function that applies an XOR gate from all qubits into the ancilla.
+              ⍝ Ancilla should be in the index 0.
               x←1↑⍺
               a←1↓⍺
               ret←(((⊃x)0)(⊂CNOT))stage ⍵
               (⍴a)=0:ret
               a ∇ ret
           }
-     
-     
-        ⍝ Make the stage a function to iterate it through all indices
           (⍳n_qubits)apply ⍵
       }
 
