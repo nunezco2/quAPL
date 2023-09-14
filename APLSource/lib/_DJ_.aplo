@@ -5,8 +5,8 @@
      ⍝
      ⍝ Whenever the idiom {⍵:X ⋄ Y}Bs appears, The function is checking if the ancilla qubit is 0 to not apply any SWAPs
      ⍝
-     ⍝ ⍵[1]: Index of the ancilla qubit, if this is not passed (meaning that ⍵ is simply the vector state) the ancilla qubit will be 0
-     ⍝ ⍵[2]: Initial vector state in the 0 state.
+     ⍝ ⍵: Initial vector state in the 0 state.
+     ⍝ ⍺: The index of the ancilla. If this is not passed the ancilla will be 0
      ⍝ ⍺⍺: Oracle to be used in the DJ algorithm.
 
      ⍝ Define the functions that we are going to use
@@ -15,39 +15,24 @@
      CNOT ← #.quapl.gates.CNOT
      SWAP ← #.quapl.gates.SWAP
      stage ← #.quapl.circuit.stage
-     w ← ⍵
+     ⍺ ← 0
 
-     X_anc ← {
-         ⍝ Apply an X gate to the ⍺ index
-
-         ((⍺) (⊂X)) stage (⊃⍵)
-     }
-
-     swap_anc ← {
+     prep ← {
          ⍝ ⍵: Vector state to apply X and SWAP to the ancilla qubit
          ⍝ ⍺: Index of the ancilla qubit
-         ⍝ Input variables are placed in defined variables to make scopes clear.
-
-
-         w_int ← ⍵
-         a ← ⍺
-         mid_state ← ⍺ X_anc ⍵
-         {⍵: ((0 a)(⊂SWAP)stage mid_state) ⋄ w_int}(⍺≠0)
+         mid_state ← ((⍺)(⊂X))stage ⍵
+         ⍺ {⍵:(((0 ⍺) (⊂SWAP)) stage mid_state) ⋄ mid_state} (⍺≠0)
      }
 
-     unswap_anc ← {
-         ⍝ ⍵: Vector state to undo swap_anc apply X and SWAP to the ancilla qubit
+     unprep ← {
+         ⍝ ⍵: Vector state to undo prep apply X and SWAP to the ancilla qubit
          ⍝ ⍺: Index of the ancilla qubit
-         ⍝ Input variables are placed in defined variables to make scopes clear.
-
-         w_int ← ⍵
-         a ← ⍺
-         mid_state ← 0 X_anc(⊂⍵)
-         {⍵: ((0 a)(⊂SWAP)stage mid_state) ⋄ w_int}(⍺≠0)
+         mid_state ← ((⍺) (⊂X)) stage ⍵
+         ⍺ {: (((0 ⍺) (⊂SWAP) )stage mid_state) ⋄ mid_state} (⍺≠0)
      }
 
      ⍝ Preps the state according the ancilla qubit.
-     ini ← ({⍵: ((0 X_anc(⊂w))) ⋄ ((w[1]swap_anc w[2]))}((|≡⍵)≠2))
+     ini ← ⍺ prep ⍵
      n_qubits ← (2⍟1⌷⍴ini)
 
      stg_ctrl ← (((⍳n_qubits)-1) ({H}¨⍳n_qubits))
@@ -60,5 +45,5 @@
      final_state ← stg_ctrl stage oracle_state
 
      ⍝ Unprep the state
-     {⍵: ((0 X_anc (⊂final_state))) ⋄ ((w[1] unswap_anc final_state))}((|≡⍵) ≠2)
+     ⍺ unprep final_state
  }
