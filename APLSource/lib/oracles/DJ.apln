@@ -8,6 +8,7 @@
     stage ← #.quapl.circuit.stage
 
       zero ← {
+          ⍝ Returns the vector state without modifying the vector state
           ⍵
       }
 
