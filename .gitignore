@@ -1,5 +1,6 @@
 .DS_Store
 .vscode
+.idea
 
 /packages/*
 !/packages/apl-dependencies.txt

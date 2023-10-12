@@ -24,13 +24,6 @@
          ⍺ {⍵:(((0 ⍺) (⊂SWAP)) stage mid_state) ⋄ mid_state} (⍺≠0)
      }
 
-     unprep ← {
-         ⍝ ⍵: Vector state to undo prep apply X and SWAP to the ancilla qubit
-         ⍝ ⍺: Index of the ancilla qubit
-         mid_state ← ((⍺) (⊂X)) stage ⍵
-         ⍺ {: (((0 ⍺) (⊂SWAP) )stage mid_state) ⋄ mid_state} (⍺≠0)
-     }
-
      ⍝ Preps the state according the ancilla qubit.
      ini ← ⍺ prep ⍵
      n_qubits ← (2⍟1⌷⍴ini)
@@ -45,5 +38,5 @@
      final_state ← stg_ctrl stage oracle_state
 
      ⍝ Unprep the state
-     ⍺ unprep final_state
+     ⍺ prep final_state
  }
