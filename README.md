@@ -9,6 +9,11 @@ Bruno de Abreu (babreu@illinois.edu)
 
 National Center for Supercomputing Applications
 
+## Installation and First Steps
+
+For installation details and a guide on how to start using quAPL, please see the our [wiki page](https://github.com/nunezco2/quAPL/wiki).
+
+
 ## Description
 
 **quAPL** is an APL implementation of a collection of primitives that can be used to simulate a quantum computer. The code is inteded to be experimental, and will continue to be expanded upwards to contain composable primitives leading to the vision of an Instruction Set Architecture, as well as downwards to replace core entities with calls to existing quantum implementations, ideally using OpenQASM.
