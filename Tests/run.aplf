@@ -1,0 +1,17 @@
+Run dir;testdir;results
+⍝ dyalog -b -s LOAD=src
+
+testdir ← 'tests',⍨⊃1⎕NPARTS'[/\\]$'⎕R''⊃dir
+:If ~(⎕NEXISTS⍠1) testdir,'/test_*'
+    ⎕←'No tests found'
+    ⎕OFF 0
+:EndIf
+⎕PW ← 32767
+results ← ⎕SE.UCMD'DTest ',testdir, ' -quiet'
+:If 0=≢results
+    ⎕←'All tests passed'
+    ⎕OFF 0
+:Else
+    ⎕←results
+    ⎕OFF 11
+:EndIf
