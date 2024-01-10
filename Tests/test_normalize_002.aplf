@@ -1,0 +1,7 @@
+test_normalize_002 ← {
+    correct_vector ← (1÷17*0.5)(4÷17*0.5)
+    result←#.mlt.normalize 2 8
+
+    'result should be correct_vector' ⊢ correct_vector Assert result:
+    ''
+}

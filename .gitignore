@@ -9,3 +9,6 @@
 /packages_dev/*
 !/packages_dev/apl-dependencies.txt
 !/packages_dev/apl-buildlist.json
+
+# something about dtest generates these files
+*.rng.txt 

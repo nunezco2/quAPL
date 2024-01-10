@@ -4,9 +4,6 @@
     ⍝ All oracles should know that the first item in the register that they are accepting
     ⍝ is the ancilla qubit in the state |->
 
-    CNOT ← #.quapl.gates.CNOT
-    stage ← #.quapl.circuit.stage
-
       zero ← {
           ⍝ Returns the vector state without modifying the vector state
           ⍵
@@ -20,7 +17,7 @@
               ⍝ Ancilla should be in the index 0.
               x ← 1↑⍺
               a ← 1↓⍺
-              ret ← (((⊃x)0) (⊂CNOT)) stage ⍵
+              ret ← (((⊃x)0) (⊂#.quapl.gates.CNOT)) #.quapl.circuit.stage ⍵
               (⍴a)=0: ret
               a ∇ ret
           }
