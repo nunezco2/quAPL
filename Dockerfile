@@ -1,6 +1,6 @@
 # Use the dyalog/dyalog base image
 
-FROM dyalog/dyalog:latest
+FROM dyalog/dyalog
 
 ARG DYALOG_RELEASE=18.2
 
@@ -19,7 +19,7 @@ RUN chmod 777 /home/dyalog/MyUCMDs && chown dyalog:dyalog /home/dyalog/MyUCMDs
 # directory
 RUN mkdir /src /tests
 
-RUN chown dyalog:dyalog /src /tests && chmod 777 /tests
+RUN chown dyalog:dyalog /src /tests
 
 # We have a custom entrypoint script that relies on the LOAD variable being set.
 COPY entrypoint.sh /entrypoint
