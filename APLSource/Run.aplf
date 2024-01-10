@@ -1,13 +1,10 @@
 Run dir;testdir;results
-⍝ (⎕NS⍬).({}enableSALT⊣⎕CY'salt')
 
 ⍝ The following is simply a file to be able to run all of the Dtest test.
 ⍝ It does not contain any quapl code.
 ⍝ dyalog -b -s LOAD=src
 
 testdir ← 'tests',⍨⊃1⎕NPARTS'[/\\]$'⎕R''⊃dir
-⎕←testdir
-⍝ Link.create # /Users/marcosf2/Documents/github/apl/quAPL
 
 :If ~(⎕NEXISTS⍠1) testdir,'/test_*'
     ⎕←'No tests found'
