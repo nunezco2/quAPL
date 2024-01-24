@@ -1,0 +1,6 @@
+ test_qx_orthogonality_001 ← {
+     correct_answer ← 0
+     result ← ((⍉#.quapl.sng.qx 0 1)+.×(#.quapl.sng.qx 1 0))
+     'If the basis is orthogonal, the result should be 0'⊢ ⊃correct_answer Assert ⊃result:
+     ''
+ }

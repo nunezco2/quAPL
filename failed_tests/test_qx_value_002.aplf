@@ -1,0 +1,9 @@
+ ⍝ Fails (I think) because the qx product is defined backwards, x.+ is not the same as +.x.
+ test_qx_value_002 ← {
+     correct_value ← 2 1 ⍴ ((1÷(82*0.5))(9÷(82*0.5)))
+     result ← #.quapl.sng.qx 1 9
+     ⎕←'Correct value 'correct_value
+     ⎕←'Result 'result
+     'A vector state with equal numbers should give you the state 1/sqrt(82) 9/sqrt(82)'⊢correct_value Assert result:
+     ''
+ }

@@ -12,3 +12,6 @@
 
 # something about dtest generates these files
 *.rng.txt 
+
+# dyalog crashes generate aplcore files
+aplcore
