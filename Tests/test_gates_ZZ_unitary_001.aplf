@@ -1,0 +1,7 @@
+ test_gates_ZZ_unitary_001 ← {
+    correct_result ← 1
+    result ← (⌹≡⍉∘+) #.quapl.gates.ZZ 2
+
+    'If 0, it means the generated matrix is not unitary'⊢ correct_result Assert result:
+    ''
+ }

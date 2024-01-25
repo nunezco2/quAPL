@@ -1,0 +1,7 @@
+test_gates_ZZ_value_001 ← {
+    correct_result ← 4 4  ⍴ (*(0J¯1 × (2 ÷ 2))) 0 0 0 0 (*(0J1 × (2 ÷ 2))) 0 0 0 0 (*(0J1 × (2 ÷ 2))) 0 0 0 0 (*(0J¯1 × (2 ÷ 2)))
+    result ← #.quapl.gates.ZZ 2
+    
+    'Function should be calculating the same gate' ⊢ correct_result Assert result:
+    ''  
+}
