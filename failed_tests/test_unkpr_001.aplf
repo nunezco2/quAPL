@@ -1,0 +1,13 @@
+test_unkpr_001 ← {
+    a ← 2 1 ⍴ 0 1 
+    b ← 2 1 ⍴ 2 3
+    correct_result ← 2 1 ⍴ a , b
+    result ← #.quapl.mlt.unkpr 4 1 ⍴ 0 0 2 3
+    
+    ⎕ ← correct_result
+    ⎕ ← result
+
+    'Basic arbitrary values matrices to test kpr'⊢ correct_result Assert result:
+    ''
+
+}
