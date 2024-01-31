@@ -1,0 +1,12 @@
+test_thread_001 ← {
+    correct_result ← 8 1 ⍴ 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+    a ← 2 1 ⍴ 1 0 
+    b ← 2 1 ⍴ 1 0 
+    c ← 2 1 ⍴ 1 0 
+    result ← #.quapl.circuit.thread (a b c)
+
+    'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
+    ''
+
+
+}
