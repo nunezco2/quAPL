@@ -1,0 +1,10 @@
+test_stage_002 ← {
+    correct_result ← 8 1 ⍴ 1 0 0 0 0 0 0 0
+    vs ← 8 1 ⍴ 1 0 0 0 0 0 0 0 
+    vs2 ← ((0 1 2)(#.quapl.gates.H #.quapl.gates.H #.quapl.gates.H)) #.quapl.circuit.stage vs
+    result ← ((0 1 2)(#.quapl.gates.H #.quapl.gates.H #.quapl.gates.H)) #.quapl.circuit.stage vs2
+
+    'Applying the same stage twice did not bring the state back to ground' ⊢ correct_result Assert result:
+    ''
+
+}
