@@ -1,6 +1,6 @@
 test_qrdtotrd_002 ← {
     correct_result ← 1 5 9 13 2 6 10 14 3 7 11 15 4 8 12 16
-    result ← 4 #.quapl.circuit.qrdtotrd 3 4 1 2
+    result ← 4 .circuit.qrdtotrd 3 4 1 2
 
     'Re arranging 1 2 3 4 to 3 4 1 2' ⊢ correct_result Assert result:
     ''

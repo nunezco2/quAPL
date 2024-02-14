@@ -1,6 +1,6 @@
  test_gates_CP_unitary_001 ← {
     correct_result ← 1
-    result ← (⌹≡⍉∘+) #.quapl.gates.CP 2
+    result ← (⌹≡⍉∘+) .gates.CP 2
 
     'If 0, it means the generated matrix is not unitary'⊢ correct_result Assert result:
     ''

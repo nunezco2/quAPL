@@ -1,6 +1,6 @@
  test_gates_gCTR_unitary_002 ← {
     correct_result ← 1
-    result ← (⌹≡⍉∘+) (5 #.quapl.gates.gCTR (2 2 ⍴ 0 1 1 0))
+    result ← (⌹≡⍉∘+) (5 .gates.gCTR (2 2 ⍴ 0 1 1 0))
 
     'If 0, it means the generated matrix is not unitary. Testing with multiple qubits'⊢ correct_result Assert result:
     ''

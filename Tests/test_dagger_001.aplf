@@ -1,6 +1,6 @@
 test_dagger_001 ← {
     correct_result ← 2 2 ⍴ 0J¯3 1 0J¯1 2J1
-    result ← #.quapl.mlt.dagger (2 2 ⍴ 0J3 0J1 1 2J¯1)
+    result ← .mlt.dagger (2 2 ⍴ 0J3 0J1 1 2J¯1)
 
     'Taking the dagger to an arbitrary matrix'⊢ correct_result Assert result:
     ''

@@ -1,7 +1,7 @@
 test_stage_003 ← {
     correct_result ← 8 1 ⍴ (0.5 0 0.5 0 0 0 0 0)*0.5
     vs ← 8 1 ⍴ 1 0 0 0 0 0 0 0 
-    result ← ((1)(⊂#.quapl.gates.H)) #.quapl.circuit.stage vs
+    result ← ((1)(⊂.gates.H)) .circuit.stage vs
     
     'The end vector state is not an equal superposition' ⊢ correct_result Assert result:
     ''

@@ -1,7 +1,7 @@
 test_thread_reg_001 ← {
     correct_result ← 8 1 ⍴ 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-    reg ← #.quapl.circuit.reg 3
-    result ← #.quapl.circuit.thread_reg reg
+    reg ← .circuit.reg 3
+    result ← .circuit.thread_reg reg
 
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''

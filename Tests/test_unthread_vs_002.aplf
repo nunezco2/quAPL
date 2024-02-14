@@ -3,7 +3,7 @@ test_unthread_vs_002 ← {
     b ← 2 1 ⍴ 0 1 
     c ← 2 1 ⍴ 1 0 
     correct_result ← 3 2 ⍴ 0 a 1 b 2 c
-    result ← #.quapl.circuit.unthread_vs 8 1 ⍴ 0 0 (1÷(2*0.5)) 0 0 0 (1÷(2*0.5)) 0
+    result ← .circuit.unthread_vs 8 1 ⍴ 0 0 (1÷(2*0.5)) 0 0 0 (1÷(2*0.5)) 0
 
     'Unthreading a vs into the states defined above'⊢correct_result Assert result:
     ''

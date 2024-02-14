@@ -1,7 +1,7 @@
 test_register_002 ← {
     a ← 2 1 ⍴ 1 0
     correct_result ← 6 2 ⍴ 0 a 1 a 2 a 3 a 4 a 5 a
-    result ← #.quapl.circuit.reg 6
+    result ← .circuit.reg 6
 
     'Testing correct register instantiation' ⊢ correct_result Assert result:
     ''

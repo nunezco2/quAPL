@@ -5,7 +5,7 @@ test_measure_003 ← {
     state0 ← 8 1 ⍴ (0.5*0.5) 0 0 0 (0.5*0.5) 0 0 0
     state1 ← 8 1 ⍴ 0 (0.5*0.5) 0 0 0 (0.5*0.5) 0 0
 
-    measured_ret ← 2 #.quapl.measurement.measure initial_vs
+    measured_ret ← 2 .measurement.measure initial_vs
     qubit_result ← ⊃ 2 ⌷ (⊃⊃(1 ⌷ measured_ret))
     measured_state ← ⊃ 2 ⌷ (measured_ret)
 
