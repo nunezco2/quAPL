@@ -1,0 +1,11 @@
+test_stage_004 ← {
+    correct_result ← (16 1)⍴∘⊂0
+    correct_result[2;1] ← 1
+    vs ← (16 1)⍴∘⊂0
+    vs[6;1] ← 1
+    result ← ((3 1)(⊂#.quapl.gates.CNOT)) #.quapl.circuit.stage vs
+
+    'starts with qubit 3 & 1 in 1 and apply CNOT from 3 to 1' ⊢ correct_result Assert result:
+    ''
+
+}
