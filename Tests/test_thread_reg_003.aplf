@@ -1,12 +1,12 @@
 test_thread_reg_003 ← {
     correct_result ← 16 1 ⍴ (16/0.25)
     a ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5)) 
-    reg ← .circuit.reg 4
+    reg ← #.circuit.reg 4
     reg[1;2] ← ⊂a
     reg[2;2] ← ⊂a
     reg[3;2] ← ⊂a
     reg[4;2] ← ⊂a
-    result ← .circuit.thread_reg reg
+    result ← #.circuit.thread_reg reg
     
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''

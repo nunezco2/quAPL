@@ -1,6 +1,6 @@
  test_qx_value_001 ← {
      correct_value ← 2 1 ⍴ ((1÷(2*0.5)) (1÷(2*0.5)))
-     result ← .sng.qx 5 5
+     result ← #.sng.qx 5 5
 
      'A vector state with equal numbers should give you the state 1/sqrt(2) 1/sqrt(2)'⊢ correct_value Assert result:
      ''

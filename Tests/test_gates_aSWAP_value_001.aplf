@@ -1,6 +1,6 @@
 test_gates_aSWAP_value_001 ← {
     correct_result ← 4 4 ⍴ 1 0 0 0 0 ((1 + (*(0J1 × (○ 2)))) ÷ 2) ((1 - (*(0J1 × (○ 2)))) ÷ 2) 0 0 ((1 - (*(0J1 × (○ 2)))) ÷ 2) ((1 + (*(0J1 × (○ 2)))) ÷ 2) 0 0 0 0 1
-    result ← .gates.aSWAP 2
+    result ← #.gates.aSWAP 2
 
     'Function should be calculating the same gate' ⊢ correct_result Assert result:
     ''  

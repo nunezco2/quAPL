@@ -4,7 +4,7 @@ test_unthread_vs_003 ← {
     c ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5))  
     d ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5))  
     correct_result ← 4 2 ⍴ 0 a 1 b 2 c 3 d 
-    result ← .circuit.unthread_vs (16 1 ⍴ (16/0.25))
+    result ← #.circuit.unthread_vs (16 1 ⍴ (16/0.25))
     
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''

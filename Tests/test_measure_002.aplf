@@ -5,7 +5,7 @@ test_measure_002 ← {
     n_shots ← 100000
     vs ← 8 1 ⍴ (correct_result*0.5)
 
-    probs ← (+/ (⊃ ¨ 2⌷ ¨ .measurement.measure ¨ (n_shots / ⊂vs))) ÷ n_shots
+    probs ← (+/ (⊃ ¨ 2⌷ ¨ #.measurement.measure ¨ (n_shots / ⊂vs))) ÷ n_shots
     
     ⍝ Calculate the difference between the measured probs and the correct result and round those, everything should add up to 0
     result ← +/ 2(⍎⍕) correct_result-(,⊃probs)

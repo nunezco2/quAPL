@@ -1,7 +1,7 @@
 test_stage_001 ← {
     correct_result ← 8 1 ⍴ (0.125 0.125 0.125 0.125 0.125 0.125 0.125 0.125)*0.5
     vs ← 8 1 ⍴ 1 0 0 0 0 0 0 0 
-    result ← ((0 1 2)(.gates.H .gates.H .gates.H)) .circuit.stage vs
+    result ← ((0 1 2)(#.gates.H #.gates.H #.gates.H)) #.circuit.stage vs
     
     'The end vector state is not an equal superposition' ⊢ correct_result Assert result:
     ''

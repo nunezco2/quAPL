@@ -3,7 +3,7 @@ test_thread_001 ← {
     a ← 2 1 ⍴ 1 0 
     b ← 2 1 ⍴ 1 0 
     c ← 2 1 ⍴ 1 0 
-    result ← .circuit.thread (a b c)
+    result ← #.circuit.thread (a b c)
 
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''
