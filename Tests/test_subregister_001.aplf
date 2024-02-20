@@ -6,5 +6,4 @@ test_subregister_001 ← {
 
     'Getting the correct subregister'⊢correct_result Assert result:
     ''  
-
 }

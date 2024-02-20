@@ -1,8 +1,8 @@
- test_gates_YY_unitary_001 ← {
-    correct_result ← 1
-    result ← (⌹≡⍉∘+) #.quapl.gates.YY 2
+test_gates_YY_unitary_001 ← {
+   correct_result ← 1
+   result ← (⌹≡⍉∘+) #.quapl.gates.YY 2
 
-    'If 0, it means the generated matrix is not unitary'⊢ correct_result Assert result:
-    ''
- }
+   'If 0, it means the generated matrix is not unitary'⊢ correct_result Assert result:
+   ''
+}
  

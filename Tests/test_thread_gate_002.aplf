@@ -1,5 +1,5 @@
 test_thread_gate_002 ← {
-    a ← 1÷2*0.5
+    a ← 0.5*0.5
     correct_result ← correct_result←8 8⍴(0 a 0 a 0 0 0 0 a 0 a 0 0 0 0 0 0 a 0 (¯1×a) 0 0 0 0 a 0 (¯1×a) 0 0 0 0 0 0 0 0 0 0 (¯1×a) 0 (¯1×a) 0 0 0 0 (¯1×a) 0 (¯1×a) 0 0 0 0 0 0 (¯1×a) 0 a 0 0 0 0 (¯1×a) 0 a 0)
     result ← #.quapl.circuit.thread_gate (#.quapl.gates.Z #.quapl.gates.H #.quapl.gates.X)
 

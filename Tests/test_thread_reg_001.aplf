@@ -5,6 +5,4 @@ test_thread_reg_001 ← {
 
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''
-
-
 }

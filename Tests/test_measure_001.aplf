@@ -9,5 +9,4 @@ test_measure_001 ← {
 
     'Testing an equal superposition with 3 qubits' ⊢ 0 Assert result:
     ''
-
 }

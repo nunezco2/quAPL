@@ -1,5 +1,6 @@
 test_thread_gate_001 ← {
-    correct_result ← 4 4⍴(0 (0.5*0.5) 0 (0.5*0.5) (0.5*0.5) 0 (0.5*0.5) 0 0 (0.5*0.5) 0 (¯1×0.5*0.5) (0.5*0.5) 0 (¯1×0.5*0.5) 0)
+    sqrt ← (0.5*0.5)
+    correct_result ← 4 4⍴(0 sqrt 0 sqrt sqrt 0 sqrt 0 0 sqrt 0 (¯1×sqrt) sqrt 0 (¯1×sqrt) 0)
     result ← #.quapl.circuit.thread_gate (#.quapl.gates.H #.quapl.gates.X)
 
     'Testing H kpr X' ⊢ correct_result Assert result:

@@ -8,5 +8,4 @@ test_subregister_002 ← {
 
     'Getting the correct subregister'⊢correct_result Assert result:
     ''  
-
 }

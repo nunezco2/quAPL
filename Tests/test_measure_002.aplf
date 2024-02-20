@@ -12,5 +12,4 @@ test_measure_002 ← {
 
     'Testing an imbalanced superposition with 3 qubits' ⊢ 0 Assert result:
     ''
-
 }

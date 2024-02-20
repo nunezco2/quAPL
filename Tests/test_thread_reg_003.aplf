@@ -1,6 +1,7 @@
 test_thread_reg_003 ← {
     correct_result ← 16 1 ⍴ (16/0.25)
-    a ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5)) 
+    sqrt ← 0.5*0.5
+    a ← 2 1 ⍴ sqrt sqrt
     reg ← #.quapl.circuit.reg 4
     reg[1;2] ← ⊂a
     reg[2;2] ← ⊂a

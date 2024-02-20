@@ -4,5 +4,4 @@ test_dagger_001 ← {
 
     'Taking the dagger to an arbitrary matrix'⊢ correct_result Assert result:
     ''
-
 }
