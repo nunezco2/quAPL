@@ -1,6 +1,6 @@
  test_gates_Rz_unitary_001 ← {
     correct_result ← 1
-    result ← (⌹≡⍉∘+) #.gates.Rz 2
+    result ← (⌹≡⍉∘+) #.quapl.gates.Rz 2
 
     'If 0, it means the generated matrix is not unitary'⊢ correct_result Assert result:
     ''

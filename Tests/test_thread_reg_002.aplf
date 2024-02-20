@@ -3,11 +3,11 @@ test_thread_reg_002 ← {
     a ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5)) 
     b ← 2 1 ⍴ 0 1 
     c ← 2 1 ⍴ 1 0 
-    reg ← #.circuit.reg 3
+    reg ← #.quapl.circuit.reg 3
     reg[1;2] ← ⊂a
     reg[2;2] ← ⊂b
     reg[3;2] ← ⊂c
-    result ← #.circuit.thread_reg reg
+    result ← #.quapl.circuit.thread_reg reg
 
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''

@@ -2,7 +2,7 @@ test_subregister_001 ← {
     a ← 2 1 ⍴ 1 0
     reg ← 6 2 ⍴ 0 (a) 1 (a) 2 (a) 3 (a) 4 (a) 5 (a)
     correct_result ← 2 ⍴ 2 (a)
-    result ← 2 #.circuit.subregister reg
+    result ← 2 #.quapl.circuit.subregister reg
 
     'Getting the correct subregister'⊢correct_result Assert result:
     ''  

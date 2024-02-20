@@ -1,10 +1,10 @@
 test_kpr_basic_005 ← {
     sqrt ← 1 ÷ (2*0.5) ⍝ value for 1 / sqrt(2) for simplicity of writing 
     correct_result ← 8 8 ⍴ 0 0 sqrt 0 0 0 sqrt 0 0 0 0 sqrt 0 0 0 sqrt sqrt 0 0 0 sqrt 0 0 0 0 sqrt 0 0 0 sqrt 0 0 0 0 sqrt 0 0 0 (¯1×sqrt) 0 0 0 0 sqrt 0 0 0 (¯1×sqrt) sqrt 0 0 0 (¯1×sqrt) 0 0 0 0 sqrt 0 0 0 (¯1×sqrt) 0 0
-    a ← #.gates.H
-    b ← #.gates.X
-    c ← #.gates.I
-    result ← a #.mlt.kpr b #.mlt.kpr c
+    a ← #.quapl.gates.H
+    b ← #.quapl.gates.X
+    c ← #.quapl.gates.I
+    result ← a #.quapl.mlt.kpr b #.quapl.mlt.kpr c
 
     'Testing H kpr X kpr I'⊢ correct_result Assert result:
     ''

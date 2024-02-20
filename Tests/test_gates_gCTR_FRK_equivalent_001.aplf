@@ -1,6 +1,6 @@
 test_gates_gCTR_FRK_equivalent_001 ← {
     correct_result ← 8 8 ⍴ 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 1
-    result ← 1 #.gates.gCTR (4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1)
+    result ← 1 #.quapl.gates.gCTR (4 4 ⍴ 1 0 0 0 0 0 1 0 0 1 0 0 0 0 0 1)
 
     'You should be able to create the Fredkin gate out of a generalized control gate' ⊢ correct_result Assert result:
     ''  

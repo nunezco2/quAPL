@@ -1,7 +1,7 @@
  test_bloch_orthogonality_001 ← {
      correct_answer ← 0
-     result ← (0 #.sng.bloch(○1)) +.× (0 #.sng.bloch(○0))
-     result ← #._r_ result
+     result ← (0 #.quapl.sng.bloch(○1)) +.× (0 #.quapl.sng.bloch(○0))
+     result ← #.quapl._r_ result
 
      'cross product of 2 opposing vectors should be 0'⊢correct_answer Assert result:
      ''

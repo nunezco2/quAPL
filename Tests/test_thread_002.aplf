@@ -3,7 +3,7 @@ test_thread_002 ← {
     a ← 2 1 ⍴ (1÷(2*0.5)) (1÷(2*0.5)) 
     b ← 2 1 ⍴ 0 1 
     c ← 2 1 ⍴ 1 0 
-    result ← #.circuit.thread (a b c)
+    result ← #.quapl.circuit.thread (a b c)
 
     'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
     ''

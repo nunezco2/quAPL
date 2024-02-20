@@ -1,7 +1,7 @@
 test_thread_gate_002 ← {
     a ← 1÷2*0.5
     correct_result ← correct_result←8 8⍴(0 a 0 a 0 0 0 0 a 0 a 0 0 0 0 0 0 a 0 (¯1×a) 0 0 0 0 a 0 (¯1×a) 0 0 0 0 0 0 0 0 0 0 (¯1×a) 0 (¯1×a) 0 0 0 0 (¯1×a) 0 (¯1×a) 0 0 0 0 0 0 (¯1×a) 0 a 0 0 0 0 (¯1×a) 0 a 0)
-    result ← #.circuit.thread_gate (#.gates.Z #.gates.H #.gates.X)
+    result ← #.quapl.circuit.thread_gate (#.quapl.gates.Z #.quapl.gates.H #.quapl.gates.X)
 
     'Testing Z kpr H kpr X' ⊢ correct_result Assert result:
     ''
