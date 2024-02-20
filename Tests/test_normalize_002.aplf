@@ -1,7 +1,7 @@
 test_normalize_002 ← {
     sqrt ← 17*0.5
     correct_vector ← (1÷sqrt)(4÷sqrt)
-    result←#.quapl.mlt.normalize 2 8
+    result ← #.quapl.mlt.normalize 2 8
 
     'result should be correct_vector' ⊢ correct_vector Assert result:
     ''
