@@ -1,0 +1,9 @@
+test_kpr_basic_002 ← {
+    correct_result ← 4 1 ⍴ 1 0 0 0 
+    a ← #.quapl.sng.q0
+    result ← a #.quapl.mlt.kpr a
+    
+    'Testing 2 separate |0> qubits'⊢ correct_result Assert result:
+    ''
+
+}

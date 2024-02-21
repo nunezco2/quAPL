@@ -1,0 +1,5 @@
+ _r_ ← {
+     ⍝ A function for rounding numbers.
+     ⍝ Used for when something should be evaluated to 0
+     0J1⊥(⊢×⎕CT<|)11 9∘.○⍵
+ }

@@ -1,0 +1,9 @@
+⍝ Fails because bloch returns a row vector, not a column vector.
+test_bloch_value_001 ← {
+    sqrt ← 0.5*0.5
+    correct_value ← 2 1 ⍴ sqrt sqrt
+    result ← (○3) #.quapl.sng.bloch (○(7÷2))
+    result ← #.quapl._r_ result
+    'Testing for the vector |+>'⊢correct_value Assert result:
+    ''
+}

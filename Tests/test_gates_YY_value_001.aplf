@@ -1,0 +1,7 @@
+test_gates_YY_value_001 ← {
+    correct_result ← 4 4  ⍴ (2 ○ (2 ÷ 2)) 0 0 (0J1×(1 ○ (2÷2))) 0 (2 ○ (2 ÷ 2)) (0J¯1×(1 ○ (2÷2))) 0 0 (0J¯1×(1 ○ (2÷2))) (2 ○ (2 ÷ 2)) 0 (0J1×(1 ○ (2÷2))) 0 0 (2 ○ (2 ÷ 2)) 
+    result ← #.quapl.gates.YY 2
+
+    'Function should be calculating the same gate' ⊢ correct_result Assert result:
+    ''  
+}

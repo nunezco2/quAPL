@@ -1,0 +1,9 @@
+test_unkpr_002 ← {
+    sqrt ← (0.5*0.5)
+    a ← 2 1 ⍴ sqrt sqrt
+    correct_result ← 2 1 ⍴ (a) (a)
+    result ← #.quapl.mlt.unkpr 4 1 ⍴ 0.5 0.5 0.5 0.5
+
+    'Testing the decomposition of an equal superposition in every state'⊢ (⊃correct_result) Assert (⊃result):
+    ''
+}

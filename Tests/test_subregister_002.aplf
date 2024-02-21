@@ -1,0 +1,11 @@
+test_subregister_002 ← {
+    a ← 2 1 ⍴ 1 0
+    b ← 2 1 ⍴ 0 1
+    reg ← 6 2 ⍴ 0 a 1 a 2 a 3 a 4 a 5 b
+    correct_result ← 3 2 ⍴ 4 a 0 a 5 b
+    result ← 4 0 5 #.quapl.circuit.subregister reg
+
+
+    'Getting the correct subregister'⊢correct_result Assert result:
+    ''  
+}

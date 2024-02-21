@@ -1,0 +1,18 @@
+test_measure_003 ← {
+    ⍝ Start with qubits 0 and 2 in an equal superposition
+    initial_vs ← 8 1 ⍴ 0.5 0.5 0 0 0.5 0.5 0 0
+
+    sqrt ← 0.5*0.5
+    state0 ← 8 1 ⍴ sqrt 0 0 0 sqrt 0 0 0
+    state1 ← 8 1 ⍴ 0 sqrt 0 0 0 sqrt 0 0
+
+    measured_ret ← 2 #.quapl.measurement.measure initial_vs
+    qubit_result ← ⊃ 2 ⌷ (⊃⊃(1 ⌷ measured_ret))
+    measured_state ← ⊃ 2 ⌷ (measured_ret)
+
+    ⍝ Choose the correct state we should measure depending on the result of the measurement
+    correct_result ← state0⊣⍣((,qubit_result)≡(2⍴1 0))⊢state1
+
+    'Test measuring a specific qubit does not brake a superposition' ⊢ correct_result Assert measured_state:
+    ''
+}

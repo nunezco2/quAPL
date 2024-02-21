@@ -1,0 +1,7 @@
+test_gates_G_value_001 ← {
+    correct_result ← (2 2 ⍴ (*(0J1 × (2))) 0 0 (*(0J1 × 2)))
+    result ← #.quapl.gates.G 2
+
+    'Function should be calculating the same gate' ⊢ correct_result Assert result:
+    ''  
+}

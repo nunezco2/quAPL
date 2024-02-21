@@ -1,0 +1,9 @@
+test_kpr_basic_004 ← {
+    sqrt ← 0.5*0.5
+    correct_result ← 4 1 ⍴ 0.5 0.5 0.5 0.5
+    a ← 2 1 ⍴ sqrt sqrt
+    result ← a #.quapl.mlt.kpr a
+
+    'Testing 2 separate |0> qubits'⊢ correct_result Assert result:
+    ''
+}

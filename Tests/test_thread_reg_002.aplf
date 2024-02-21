@@ -1,0 +1,15 @@
+test_thread_reg_002 ← {
+    sqrt ← 0.5*0.5
+    correct_result ← 8 1 ⍴ 0 0 sqrt 0 0 0 sqrt 0
+    a ← 2 1 ⍴ sqrt sqrt 
+    b ← 2 1 ⍴ 0 1 
+    c ← 2 1 ⍴ 1 0 
+    reg ← #.quapl.circuit.reg 3
+    reg[1;2] ← ⊂a
+    reg[2;2] ← ⊂b
+    reg[3;2] ← ⊂c
+    result ← #.quapl.circuit.thread_reg reg
+
+    'Threading different vector states should give you the combined one on top'⊢correct_result Assert result:
+    ''
+}
