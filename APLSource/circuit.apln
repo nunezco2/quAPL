@@ -72,4 +72,10 @@
         ret[new_index;]
     }
 
+    ⍝ Replaces every occurance of 0 with ⍺ in ⍵. ⍺ must be of shape 1.
+    replace ← {(⍴⍵) ⍴ (⍺@(⍸,0≡¨⍵))(,⍵)}
+
+    ⍝ Replaces every instance of 0 in ⍵ with the identity matrix
+    rep_I ← {(⊂#.quapl.gates.I) replace ⍵}
+
 :EndNamespace
