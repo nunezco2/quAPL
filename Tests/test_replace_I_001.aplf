@@ -1,0 +1,11 @@
+test_replace_I_001 ← {
+    X ← #.quapl.gates.X
+    H ← #.quapl.gates.H
+    I ← #.quapl.gates.I
+    correct_result ← 4 3 ⍴ X H X I I I I H H X I X
+    input ← 4 3 ⍴ X H X 0 0 0 0 H H X 0 X
+    result ← #.quapl.circuit.rep_I input
+
+    '0 items should have been replaced with an I gate' ⊢ correct_result Assert result:
+    ''
+}
