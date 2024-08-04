@@ -1,0 +1,12 @@
+test_QFT_value_002 ← {
+    ⍝ Testing QFT for up to 6 qubits
+    ⍝ Create all basis states for up to 6 qubits
+    input ← {(((,∘1)(⍴⊢))⍴⊢)¨↓↑1,⍨¨0/⍨¨1-⍨⍳⍵}¨2*⍳6
+    result ← #.quapl._r_¨¨ ,¨¨ #.quapl.lib._QFT_¨¨ input
+    correct_function ← {(2*(-⍺÷2))×*(0J1×2×(⍵-1)×○⍤⊢)¨(2*⍺)÷⍨1-⍨⍳(2*⍺)}
+    correct_result ← #.quapl._r_¨¨ (⍳6)correct_function¨¨(⍳¨2*⍳6)
+    
+    ⍝ Check if different is zero up to rounding
+    'Quantum Fourier Transform of basis state |j> is (2*(-n_qubits÷2))×*(0J1)×⍵×j'⊢ (⊃∪#.quapl._r_¨¨∊correct_result-result) Assert 0:
+    ''
+}

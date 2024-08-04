@@ -1,0 +1,9 @@
+test_QFT_value_001 ← {
+    ⍝ Testing QFT for up to 8 qubits
+    input ← #.quapl.circuit.thread_reg¨ #.quapl.circuit.reg¨ ⍳8
+    result ← ∊ ∪¨ #.quapl.lib._QFT_¨ input
+    correct_result ← 2*2÷⍨-⍳8
+
+    'Quantum Fourier Transform of |0> is constant 1/2*(n_qubits÷2)'⊢ correct_result Assert result:
+    ''
+}

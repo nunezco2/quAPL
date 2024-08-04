@@ -1,0 +1,19 @@
+test_QFT_inverse_001 ← {
+    ⍝ Test if application of QFT twice is the identity, up to a swap
+
+    ⍝ Random point inside the unit circle
+    random_point ← {(1000÷⍨?1000)×(*(0J1×(○2)×3600÷⍨?3600))}
+
+    ⍝ Generate sample 8-qubit quantum state
+    random_vector ← {#.quapl.mlt.normalize (256 1)⍴random_point¨⍳256}
+
+
+    input ← random_vector¨ ⍳50
+
+    result ← (⊂⊂1,1+⌽⍳255)⌷¨ #.quapl._r_¨ #.quapl.lib._QFT_¨ #.quapl.lib._QFT_¨ input
+    
+    
+    ⍝ Check if sum of differences between input and result rounds to 0
+    'Application of QFT twice is the identity, up to a swap'⊢ (⊃#.quapl._r_ +/[1]⊃+/input-result) Assert 0:
+    ''
+}
