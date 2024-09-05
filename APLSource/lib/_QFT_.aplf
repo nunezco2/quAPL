@@ -8,10 +8,11 @@ _QFT_ ← {
 
      stage ← #.quapl.circuit.stage
      H ← #.quapl.gates.H
-     swap ← #.quapl.gates.SWAP
+     SWAP ← #.quapl.gates.SWAP
+     Rz ← #.quapl.gates.Rz
      
      ⍝ Rotation in z multiplied by phase factor to match literature
-     Rz2 ← {(*0J1×⍵÷2) × #.quapl.gates.Rz ⍵}
+     Rz2 ← {(*0J1×⍵÷2) × Rz ⍵}
      
      ⍝ Rotation in z by 2 Pi / 2 ^ ⍵
      Rzn ← {Rz2 ○2÷2*⍵}
@@ -25,41 +26,19 @@ _QFT_ ← {
      ⍝ Applies the Hadamard gate then rotates qubit about z
      ⍝ Indices on left-hand side are reduced by 1, since qubit numbering starts from 0
      lane ← {((⍵-1),((⍵-1)+⍳n_qubits-⍵),¨(⍵-1))((⊂H), CRzn¨ 1+⍳n_qubits-⍵)}
-
      
-
      ⍝ Successively apply the gates of a circuit
-     stage_all ← {
-         ids gts ← ⍺
-          
-         id ← 1↑ids
-         ids ← 1↓ids
-          
-         gate ← 1↑gts
-         gts ← 1↓gts
-         
-         ret ← ((⊃id)(gate)) stage ⍵ 
-         
-         (⍴ids)=0: ret
-         (ids gts) ∇ ret
-     }
+     stage_all ← { ⊃ stage / (⌽⊃⍺[1]{⍺ (⊂⍵)}¨¨⍺[2]),⊂⍵ }
 
      ⍝ Apply the above circuit to qubits from 1 to n_qubits successively
-     apply ← {
-         x ← 1↑⍺
-         a ← 1↓⍺
-         
-         ret ← (lane x) stage_all ⍵
-         (⍴a)=0: ret
-         a ∇ ret
-     }
+     apply ← { ⊃stage_all / (⌽lane¨⍺),⊂⍵ }  
 
      ⍝ Result before swapping
      intermediate ← (⍳n_qubits) apply ⍵
 
      ⍝ Circuit to swap qubits
      ⍝ Indices on left-hand side are reduced by 1, since qubit numbering starts from 0
-     swap_circuit ← (1-⍨(⌊n_qubits÷2)↑(⌽⍳n_qubits),¨⍳n_qubits)({swap}¨⍳⌊n_qubits÷2)
+     swap_circuit ← (1-⍨(⌊n_qubits÷2)↑(⌽⍳n_qubits),¨⍳n_qubits)({SWAP}¨⍳⌊n_qubits÷2)
      
      ⍝ Check if swap circuit is non-empty
      (0=⍴1⌷↑swap_circuit): intermediate
