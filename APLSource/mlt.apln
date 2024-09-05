@@ -4,6 +4,9 @@
     ⍝ Normalize a quantum state
     normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
 
+    ⍝ Create all basis states for ⍵ qubits
+    basis ← {{((⍴⍵),1)⍴⍵}¨↓↑1,⍨¨0/⍨¨1-⍨⍳⍵}
+
     ⍝ Test that we have a valid qubit
     valid ← {
         ((⍴⍵)[1]=1)∧(⊃(2⍟(⍴⍵)[2])=⌈2⍟(⍴⍵)[2]): 1    ⍝ We have a bra
