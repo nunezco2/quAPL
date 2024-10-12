@@ -5,7 +5,7 @@
     normalize ← {⍵÷0.5*⍨(dagger+.×⊢)⍵}
 
     ⍝ Create all basis states for ⍵ qubits
-    basis ← {{((⍴⍵),1)⍴⍵}¨↓↑1,⍨¨0/⍨¨1-⍨⍳⍵}
+    basis ← {⍪¨↓↑1,⍨¨0/⍨¨1-⍨⍳2*⍵}
 
     ⍝ Test that we have a valid qubit
     valid ← {
