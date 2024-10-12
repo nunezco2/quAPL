@@ -1,0 +1,21 @@
+test_BV_value_002 ← {
+    ⍝ Test if the Bernstein-Vazirani algorithm can recover the secret bit vector for 5 bits
+
+    ⍝ Generate all possible 5 bit secret vectors
+    secrets ← 5(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨⍳1-⍨2*5
+    
+    ⍝ Generate input state
+    input ← #.quapl.circuit.reg 6
+
+    ⍝ Apply Deutsch-Jozsa algorithm with the Bernstein-Vazirani oracle for each secret bit vector
+    results ← ⍉1↓⍉ ⊃ #.quapl._r_¨¨ {(⍵),((⍺∘#.quapl.lib.oracles.BV)#.quapl.lib._DJ_)(⊃⍵)}/secrets,⊂⊂#.quapl.circuit.thread_reg input
+
+    ⍝ Get the input qubits and turn them into bits
+    results ← ⌽(⊂⍤1)({(⊂#.quapl.sng.q1)≡¨(1↓⍵[;2])}⍤2)(#.quapl.circuit.unthread_vs⍤1)⍉results
+
+
+    'Bernstein-Vazirani algorithm should return the secret bit vector'⊢ secrets Assert results:
+    ''
+
+
+}

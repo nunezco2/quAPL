@@ -1,0 +1,7 @@
+BV ← {
+    ⍝ Bernstein-Vazirani oracle
+    ⍝ Takes the inner product of the secret bit vector ⍺ with the input bit vector ⍵
+    ⍝ The first item in the register should be ancilla qubit (typically in the state |->)
+    
+    ⊃ #.quapl.circuit.stage / (((⍸⍺),¨0){⍺ (⊂⍵)}¨⊂#.quapl.gates.CNOT),⊂⍵
+}

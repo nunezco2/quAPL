@@ -1,0 +1,23 @@
+test_BV_value_001 ← {
+    ⍝ Generate all possible 5 bit secret vectors
+    secrets ← 5(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨⍳1-⍨2*5
+    
+    ⍝ From bit vector to qubit state
+    ⍝ For example, takes 0 1 0 1 to |0101>
+    state ← {n ← ⊃⍴⍵ ⋄ (⍪(⍳n)-1),(⍪((#.quapl.sng.q0 (#.quapl.sng.q1))[⍵+1]))}
+
+    ⍝ Generate all possible pure input states up to 6 bits, where the first qubit is in state is |0>
+    vectors ← #.quapl.circuit.thread_reg¨ state¨ 0,[1]¨secrets
+
+    ⍝ All possible applications of secret vectors and input vectors 
+    results ← secrets (∘.(#.quapl.lib.oracles.BV)) vectors
+
+    ⍝ Get ancilla qubits and turn them into bits
+    results ← {#.quapl.sng.q1≡⊃⍵[1;2]}¨¨#.quapl.circuit.unthread_vs¨¨results
+
+    ⍝ Check if result is equivalent to classical bitwise dot product
+    results_correct ← secrets (∘.(≠.×)) secrets
+
+    'Bernstein-Vazirani oracle should return the bitwise dot product of the secret and input vectors'⊢ results_correct Assert results:
+    ''
+}
