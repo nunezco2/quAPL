@@ -11,17 +11,9 @@
 
       XOR ← {
           n_qubits ← (2⍟1⌷⍴⍵)-1
-     
-          apply ← {
-              ⍝ Recursive function that applies an XOR gate from all qubits into the ancilla.
-              ⍝ Ancilla should be in the index 0.
-              x ← 1↑⍺
-              a ← 1↓⍺
-              ret ← (((⊃x)0) (⊂#.quapl.gates.CNOT)) #.quapl.circuit.stage ⍵
-              (⍴a)=0: ret
-              a ∇ ret
-          }
-          (⍳n_qubits) apply ⍵
+          
+          ⍝ Applies an XOR gate from all qubits into the ancilla
+          ⊃ #.quapl.circuit.stage / (((⍳n_qubits),¨0){⍺ (⊂⍵)}¨⊂#.quapl.gates.CNOT),⊂⍵
       }
 
 :EndNamespace
