@@ -1,0 +1,18 @@
+test_DJ_value_001 ← {
+    ⍝ Test if the Deutsch-Jozsa algorithm can determine if the function is constant or balanced for 6 bits
+
+    ⍝ Generate input state
+    input ← #.quapl.circuit.thread_reg #.quapl.circuit.reg 6
+
+    ⍝ Apply Deutsch-Jozsa algorithm with the XOR oracle
+    result_XOR ← ⊃((#.quapl.lib.oracles.DJ.XOR)#.quapl.lib._DJ_) input
+
+    ⍝ Apply Deutsch-Jozsa algorithm with the zero oracle
+    results_zero ← ⊃((#.quapl.lib.oracles.DJ.zero)#.quapl.lib._DJ_) input
+
+
+    'Deutsch-Jozsa algorithm should determine if a function is constant or balanced'⊢ (result_XOR results_zero) Assert (0 1):
+    ''
+
+
+}

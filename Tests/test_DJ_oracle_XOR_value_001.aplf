@@ -1,0 +1,24 @@
+test_DJ_oracle_XOR_value_001 ← {
+    ⍝ Test if the XOR oracle returns the correct value for 6 bits
+
+    ⍝ From bit vector to qubit state
+    ⍝ For example, takes 0 1 0 1 to |0101>
+    state ← {n ← ⊃⍴⍵ ⋄ (⍪(⍳n)-1),(⍪((#.quapl.sng.q0 (#.quapl.sng.q1))[⍵+1]))}
+
+    input ← 5(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨⍳1-⍨2*5
+
+    ⍝ Generate all possible pure input states up to 6 bits, where the first qubit is in state is |0>
+    vectors ← #.quapl.circuit.thread_reg¨ state¨ 0,[1]¨ input
+
+    ⍝ Apply XOR oracle to all input states
+    results ← (#.quapl.lib.oracles.DJ.XOR)¨vectors
+    
+    ⍝ Get the input qubits and turn them into bits
+    results ← {#.quapl.sng.q1≡⊃⍵[1;2]}¨#.quapl.circuit.unthread_vs¨results
+
+    ⍝ Check if result is equivalent to classical bitwise XOR
+    results_correct ← ≠/¨input
+
+    'XOR oracle should return the bitwise XOR of the input vector'⊢ results_correct Assert results:
+    ''
+}
