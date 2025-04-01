@@ -1,0 +1,35 @@
+test_QS_oracle_value_001 ← {
+    
+    X←#.quapl.gates.X
+    H←#.quapl.gates.H
+
+    ⍝ Generate all possible 3 bit sequences
+    sequences ← 3(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨1-⍨⍳2*3
+
+    ⍝ Generate all unique groups of 3 bit sequences of max length 3
+    groups ← ∪∪¨(sequences(∘.{⍺ ⍵})sequences)
+    groups ← ,∪∪¨sequences(∘.{(⊂⍺),⍵})groups
+    
+    ⍝ From bit vector to qubit state
+    ⍝ For example, takes 0 1 0 1 to |0101>
+    state ← {n ← ⊃⍴⍵ ⋄ (⍪(⍳n)-1),(⍪((#.quapl.sng.q0 (#.quapl.sng.q1))[⍵+1]))}
+
+    ⍝ Generate all possible pure input states up to 4 bits, where the first qubit is in state is |0>
+    vectors ← #.quapl.circuit.thread_reg¨ state¨ 0,[1]¨sequences
+
+
+    ⍝ Applies the X then H to the ancilla bit in the |0> position
+    vectors←(⊂0,⊂⊂H)#.quapl.circuit.stage¨((⊂0,⊂⊂X)#.quapl.circuit.stage¨ vectors)
+
+    ⍝ All possible applications of solutions and input vectors 
+    results ← ,groups (∘.(#.quapl.lib.oracles.query)) vectors
+
+    ⍝ Check signs of results
+    results ← {⍵[1]=¯1}¨{⍵/⍨0≠⍵}¨,¨{×⍵}¨results
+
+    ⍝ Check if result is equivalent to ∊ element of
+    results_correct ← ,⍉sequences (∘.{(⊂⍺)∊⍵}) groups
+
+    'Query oracle should flip the sign of states which match'⊢ results_correct Assert results:
+    ''
+}
