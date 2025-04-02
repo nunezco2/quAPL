@@ -1,0 +1,15 @@
+test_QS_value_001 ← {
+    ⍝ Check that search takes one step on two-bit states
+    solutions ← 2(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨1-⍨⍳2*2
+
+    vector ← #.quapl.circuit.thread_reg #.quapl.circuit.reg 3
+    
+    results ← (solutions{(⊂⍺) ⍵}¨1) ({(⊃⍺)#.quapl.lib._QS_ ⍵}⍤0 99) vector
+
+    ⍝ Measure the results 
+    results ← ,{(⊂#.quapl.sng.q1)≡¨{⍵[2 3;2]}⍪↑⊃#.quapl.measurement.measure ⍵}¨ ⍪¨↓[2]results
+
+    ⍝ Check if the measured results are the correct solutions
+    '2 bit Quantum Search should need only one iteration to reach the correct solution'⊢ (∧/ results (∊⍤0) solutions) Assert 1:
+    ''
+}

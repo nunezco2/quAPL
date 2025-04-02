@@ -1,0 +1,41 @@
+ query←{
+    ⍝ Query oracle for the quantum search algorithm
+    ⍝ The ancilla bit in the |-> state is assumed to be the first in the register
+    ⍝ Flips the sign of the vector state ⍵ if the matches any of the bit sequences in the set ⍺
+
+     X←#.quapl.gates.X
+     H←#.quapl.gates.H
+     stage←#.quapl.circuit.stage
+
+     n_qubits←2⍟1⌷⍴⍵
+
+    ⍝ X gate controlled by the non-ancilla bits
+     CX←(n_qubits-1)#.quapl.gates.gCTR X
+
+    ⍝ Query for a single bit sequence ⍺
+    ⍝ Flips bits where the sequence is 0
+    ⍝ Applies the X gate controlled by the non-ancilla bits
+     single_query←{
+         state←⍵
+         to_invert←⍸1-⍺
+
+         inv_circuit←(to_invert)({X}¨¨to_invert)
+
+        ⍝ Match up indices with the corresponding set of gates for staging
+         match←{⊂[1]↑⍵}
+
+        ⍝ Successively apply the gates of a circuit
+         stage_all←{⊃stage/(⌽match ⍺),⊂⍵}
+
+         state←inv_circuit stage_all state
+
+         state←((⊂(⍳n_qubits-1),0),⊂⊂CX)stage state
+
+         state←inv_circuit stage_all state
+
+         state
+     }
+
+     ⊃single_query/⍺,⊂⍵
+
+ }
