@@ -1,7 +1,7 @@
 test_QS_oracle_value_001 ← {
     
-    X←#.quapl.gates.X
-    H←#.quapl.gates.H
+    X ← #.quapl.gates.X
+    H ← #.quapl.gates.H
 
     ⍝ Generate all possible 3 bit sequences
     sequences ← 3(↑⍨∘-⍨)¨(2∘⊥⍣¯1)¨1-⍨⍳2*3
@@ -19,7 +19,7 @@ test_QS_oracle_value_001 ← {
 
 
     ⍝ Applies the X then H to the ancilla bit in the |0> position
-    vectors←(⊂0,⊂⊂H)#.quapl.circuit.stage¨((⊂0,⊂⊂X)#.quapl.circuit.stage¨ vectors)
+    vectors ← (⊂0,⊂⊂H)#.quapl.circuit.stage¨((⊂0,⊂⊂X)#.quapl.circuit.stage¨ vectors)
 
     ⍝ All possible applications of solutions and input vectors 
     results ← ,groups (∘.(#.quapl.lib.oracles.query)) vectors

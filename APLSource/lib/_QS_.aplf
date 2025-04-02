@@ -1,0 +1,43 @@
+_QS_ ← {
+     ⍝ Quantum Search algorithm
+     ⍝ Takes a vector state ⍵ of an n-qubit system, with first ancilla qubit in the |0> state 
+     ⍝ Takes a set of bit sequences to find ⍺[1] and a number of iterations ⍺[2]
+     ⍝ Applies the algorithm with ⍺[2] iterations and returns the measured solution
+     ⍝
+     ⍝ ⍵: Vector state input with first ancilla |0> qubit
+     ⍝ ⍺[1]: bit sequences to be found
+     ⍝ ⍺[2]: number of iterations
+    
+     X ← #.quapl.gates.X
+     H ← #.quapl.gates.H
+     query ← #.quapl.lib.oracles.query
+     oracle ← (⊃⍺[1])∘query
+     stage ← #.quapl.circuit.stage
+
+     n_qubits ← 2⍟1⌷⍴⍵
+
+     ⍝ Hadamard transform the input bits
+     state ← ⍵
+     state ← (0 (⊂X)) stage state
+     state ← (0 (⊂H)) stage state
+     hcircuit ← (⍳n_qubits-1) ({H}¨¨⍳n_qubits-1)
+
+
+     ⍝ Match up indices with the corresponding set of gates for staging
+     match ← {⊂[1]↑⍵}
+
+     ⍝ Successively apply the gates of a circuit
+     stage_all ← {⊃stage/(⌽match ⍺),⊂⍵}
+
+     state ← hcircuit stage_all state
+     
+     ⍝ One step of grover iteration
+     grover ← {
+          ⍝ Oracle, Inversion about mean
+          tmp ← hcircuit stage_all oracle ⍵
+          tmp ← (0 (⊂X)) stage (⊂(n_qubits-1)/0) query tmp
+          hcircuit stage_all tmp 
+     }
+
+     (0 (⊂X)) stage (0 (⊂H)) stage (grover⍣(⍺[2]))state
+}

@@ -1,4 +1,4 @@
- _QFT_←{
+ _QFT_ ← {
      ⍝ Quantum Fourier Transform
      ⍝ Takes a vector state of an n-qubit system
      ⍝ Returns the n-qubit quantum fourier transform for the vector state
@@ -6,42 +6,42 @@
      ⍝
      ⍝ ⍵: Vector state to be transformed
 
-     stage←#.quapl.circuit.stage
-     H←#.quapl.gates.H
-     SWAP←#.quapl.gates.SWAP
-     Rz←#.quapl.gates.Rz
+     stage ← #.quapl.circuit.stage
+     H ← #.quapl.gates.H
+     SWAP ← #.quapl.gates.SWAP
+     Rz ← #.quapl.gates.Rz
 
      ⍝ Rotation in z multiplied by phase factor to match literature
-     Rz2←{(*0J1×⍵÷2)×Rz ⍵}
+     Rz2 ← {(*0J1×⍵÷2)×Rz ⍵}
 
      ⍝ Rotation in z by 2 Pi / 2 ^ ⍵
-     Rzn←{Rz2○2÷2*⍵}
+     Rzn ← {Rz2○2÷2*⍵}
 
      ⍝ Controlled form of above rotation
-     CRzn←1 #.quapl.gates.gCTR Rzn
+     CRzn ← 1 #.quapl.gates.gCTR Rzn
 
-     n_qubits←2⍟1⌷⍴⍵
+     n_qubits ← 2⍟1⌷⍴⍵
 
      ⍝ Create part of circuit that affects qubit number ⍵
      ⍝ Applies the Hadamard gate then rotates qubit about z
      ⍝ Indices on left-hand side are reduced by 1, since qubit numbering starts from 0
      ⍝ Returns indices of qubits to apply gates to, and sets of corresponding gates
-     lane←{((⍵-1),((⍵-1)+⍳n_qubits-⍵),¨(⍵-1))(⊂¨(⊂H),CRzn¨1+⍳n_qubits-⍵)}
+     lane ← {((⍵-1),((⍵-1)+⍳n_qubits-⍵),¨(⍵-1))(⊂¨(⊂H),CRzn¨1+⍳n_qubits-⍵)}
 
      ⍝ Match up indices with the corresponding set of gates for staging
-     match←{⊂[1]↑⍵}
+     match ← {⊂[1]↑⍵}
 
      ⍝ Successively apply the gates of a circuit
-     stage_all←{⊃stage/(⌽match ⍺),⊂⍵}
+     stage_all ← {⊃stage/(⌽match ⍺),⊂⍵}
 
      ⍝ Apply the above circuit to qubits from 1 to n_qubits successively
      ⍝ Result before swapping
-     intermediate←⊃stage_all/(⌽lane¨(⍳n_qubits)),⊂⍵
+     intermediate ← ⊃stage_all/(⌽lane¨(⍳n_qubits)),⊂⍵
 
      ⍝ Circuit to swap qubits
      ⍝ Indices on left-hand side are reduced by 1, since qubit numbering starts from 0
      ⍝ Returns indices of qubits to apply gates to, and sets of corresponding gates
-     swap_circuit←(1-⍨(⌊n_qubits÷2)↑(⌽⍳n_qubits),¨⍳n_qubits) (⊂¨{SWAP}¨⍳⌊n_qubits÷2)
+     swap_circuit ← (1-⍨(⌊n_qubits÷2)↑(⌽⍳n_qubits),¨⍳n_qubits) (⊂¨{SWAP}¨⍳⌊n_qubits÷2)
 
      ⍝ Check if swap circuit is non-empty
      (0=⍴1⌷↑swap_circuit):intermediate
