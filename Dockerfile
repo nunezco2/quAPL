@@ -2,7 +2,7 @@
 
 FROM dyalog/dyalog
 
-ARG DYALOG_RELEASE=18.2
+ARG DYALOG_RELEASE=19.0
 
 USER root
 
@@ -17,13 +17,14 @@ RUN chmod 777 /home/dyalog/MyUCMDs && chown dyalog:dyalog /home/dyalog/MyUCMDs
 # We stipulate that the /src directory will contain the code we're testing,
 # which will be ]linked into the # namespace. Our tests will live in the /test
 # directory
-RUN mkdir -p /src/quapl /tests
+RUN mkdir -p /src/quapl /Tests
 
-RUN chown -R dyalog:dyalog /src /tests
+RUN chown -R dyalog:dyalog /src /Tests
 
 # We have a custom entrypoint script that relies on the LOAD variable being set.
 COPY entrypoint.sh /entrypoint
-RUN chmod +x /entrypoint
+COPY Run.aplf /src/Run.aplf
+RUN chmod +x /entrypoint /src/Run.aplf
 
 # Expand release template in the entrypoint
 RUN sed -i "s/{{DYALOG_RELEASE}}/${DYALOG_RELEASE}/" /entrypoint

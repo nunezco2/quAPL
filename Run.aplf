@@ -4,14 +4,14 @@ Run dir;testdir;results
 ⍝ It does not contain any quapl code.
 ⍝ dyalog -b -s LOAD=src
 
-testdir ← 'tests',⍨⊃1⎕NPARTS'[/\\]$'⎕R''⊃dir
+testdir ← 'Tests',⍨⊃1⎕NPARTS'[/\\]$'⎕R''⊃dir
 
 :If ~(⎕NEXISTS⍠1) testdir,'/test_*'
-    ⎕←'No tests found'
+    ⎕←testdir ': no tests found'
     ⎕OFF 0
 :EndIf
 ⎕PW ← 32767
-results ← ⎕SE.UCMD'DTest ',testdir, ' -quiet'
+results ← ⎕SE.UCMD'DTest ',testdir
 :If 0=≢results
     ⎕←'All tests passed'
     ⎕OFF 0
