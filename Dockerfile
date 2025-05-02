@@ -14,12 +14,12 @@ RUN mkdir -p /home/dyalog/MyUCMDs
 RUN chmod 777 /home/dyalog/MyUCMDs && chown dyalog:dyalog /home/dyalog/MyUCMDs
 
 # Create the directories for src and tests.
-# We stipulate that the /src directory will contain the code we're testing, 
+# We stipulate that the /src directory will contain the code we're testing,
 # which will be ]linked into the # namespace. Our tests will live in the /test
 # directory
-RUN mkdir /src /tests
+RUN mkdir -p /src/quapl /tests
 
-RUN chown dyalog:dyalog /src /tests
+RUN chown -R dyalog:dyalog /src /tests
 
 # We have a custom entrypoint script that relies on the LOAD variable being set.
 COPY entrypoint.sh /entrypoint
