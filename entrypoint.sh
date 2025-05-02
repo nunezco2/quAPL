@@ -6,7 +6,7 @@
 #
 # Note: the {{DYALOG_RELEASE}} template will be expanded by the docker build.
 
-export DYALOG=/opt/mdyalog/{{DYALOG_RELEASE}}/64/unicode/
+export DYALOG=/opt/mdyalog/{{DYALOG_RELEASE}}/64/unicode
 export LD_LIBRARY_PATH="${DYALOG}:${LD_LIBRARY_PATH}"
 export WSPATH=$WSPATH:${DYALOG}/ws
 export TERM=dumb
